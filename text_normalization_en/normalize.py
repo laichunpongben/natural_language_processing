@@ -506,7 +506,7 @@ class TextNormalization(object):
             return TextNormalization.normalize_measure(text)
         elif self.PROPER_CASE_CONCAT.match(text):
             print('Case PROPER_CASE_CONCAT', text)
-            return TextNormalization.normalize_proper_case_concat(text)
+            return text
         elif text.endswith('.') and len(text) > 1:  # LETTER
             print('Case LETTER', text)
             text_ = text.replace('.', '').strip().lower()
