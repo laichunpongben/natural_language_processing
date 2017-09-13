@@ -45,7 +45,7 @@ import inflect
 
 class TextNormalization(object):
     DIGIT = re.compile(r"^\d+$")
-    DECIMAL_COMMA_OPTIONAL = re.compile(r"^(?:\d+|\d{1,3}(?:,\d{3})*)(?:\.\d+)?$")
+    DECIMAL_COMMA_OPTIONAL = re.compile(r"^(?:\d*|\d{1,3}(?:,\d{3})*)(?:\.\d+)?$")
     TELEPHONE = re.compile(r"^[\d \-\(\)]+\d$")
     IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?\d{0,2}$")
     DECIMAL = re.compile(r"^\d*\.?\d+$")
@@ -394,7 +394,7 @@ class TextNormalization(object):
             return self.d_replace[text]
         elif text.isupper() and text.isalpha() and len(text) > 1 and self.has_vowel(text):
             print('Case UPPER_WORD', text)
-            return text.lower()
+            return text
         elif text.isupper() and text.isalpha() and len(text) > 1 and not self.has_vowel(text):
             print('Case UPPER_NON_WORD', text)
             return " ".join(text.lower())
