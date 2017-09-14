@@ -5,6 +5,7 @@ import pandas as pd
 import inflect
 
 # Unhandled
+# MMDDYYYY or DDMMYYYY
 # 3691,2,"2008-18-03" month 18
 # 1000-300 BCE
 # A&M
@@ -36,28 +37,38 @@ import inflect
 # .0
 # 329.7 million
 # $4.0 billion
+# €1.2 billion
 # $0.75
 # 0-9519288-3-XC
 # 0-89281-505-1 CD
+# 1960s
+# (1999)1
+# "$1.50","one dollar and fifty cents"
+# "66511_9","June 23 rd 2014"
+# telephone three o o -> three hundred
 # 112298,0,"ELECTRONIC","127.0.0.1","o n e t w o s e v e n dot o dot o dot o n e"
 # comhttp://www.thetimesonline.com/articles/2005/10/29/news/top_news/f9a7052f127cc0d4862570a8008314e3.txthttp://www.chicagotribune.com/business/showcase/chi-0308140292aug14,0,5485576,full.story
 # //web.archive.org/20071206192005/http://www.thisislancashire.co.uk:80/news/headlines/display.var.1824340.0.petition_against_violence_gains_1_500_signatures.php
 
 class TextNormalization(object):
-    DIGIT = re.compile(r"^\d+$")
-    DECIMAL_COMMA_OPTIONAL = re.compile(r"^(?:\d*|\d{1,3}(?:,\d{3})*)(?:\.\d+)?$")
+    YEAR = re.compile(r"^[1-9]\d{3} ?$")
+    LEADING_ZERO = re.compile(r"^0\d+$")
+    DECIMAL_COMMA_OPTIONAL = re.compile(r"^\-?(?=(?:\.|\d))(?:\d*|\d{1,3}(?:(?: |,)\d{3})*)(?:\.\d+)?$")
     TELEPHONE = re.compile(r"^[\d \-\(\)]+\d$")
     IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?\d{0,2}$")
     DECIMAL = re.compile(r"^\d*\.?\d+$")
     MONEY = re.compile(r"^\$?\-?([1-9]{1}[0-9]{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))$|^\-?\$?([1-9]{1}\d{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))$|^\(\$?([1-9]{1}\d{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))\)$")
-    PERCENT = re.compile(r"^\-?\d+(?:\.\d+)?(?:%| percent)$")
-    DATE_YYYYMMDD = re.compile(r"^[1-2]\d{3}\-[0-1]\d\-[0-3]\d$")
-    DATE_EN_DMY = re.compile(r"^\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$")
-    DATE_EN_MY = re.compile(r"^(January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$")
-    DATE_EN_MDY = re.compile(r"^(January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}\, \d{4}$")
+    PERCENT = re.compile(r"^\-?(?=(?:\.|\d))\d+(?:\.\d+)?(?:%| percent)$")
+    DATE_YYYYMMDD = re.compile(r"^[1-2]\d{3}(?:\-|\/|\.)[0-1]?\d(?:\-|\/|\.)[0-3]?\d$")
+    DATE_DDMMYYYY = re.compile(r"^[0-3]?\d(?:\-|\/|\.)[0-1]?\d(?:\-|\/|\.)[1-2]\d{3}$")
+    DATE_EN_DMY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?\d{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)\.? \d{4}$")
+    DATE_EN_DM = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?\d{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)\.? ?$")
+    DATE_EN_MD = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)\.? \d{1,2}(?:st|nd|rd|th)? ?$")
+    DATE_EN_MY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)\.? \d{4}$")
+    DATE_EN_MDY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)\.? \d{1,2}(?:st|nd|rd|th)?\, \d{4}$")
     YEAR_CALENDAR = re.compile(r"^\d+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?$")
     PROPER_CASE_CONCAT = re.compile(r"^(?:[A-Z][^A-Z\s\.]+){2,}$")
-    MEASURE = re.compile(r"^(?:\d+|\d{1,3}(?:,\d{3})*)(?:\.\d+)?(?:\/| )?(?:m2|km|km2|km3|km²|km\/h|kg\/m3|g\/cm3|mg\/kg|sq mi|mi|MB|m|ha|cm|nm|ft|sq ft|Gy|AU|MW)$")  # km²
+    MEASURE = re.compile(r"^(?:\d+|\d{1,3}(?:,\d{3})*)(?:\.\d+)?(?:\/| )?(?:m2|m3|km|km2|km3|km²|km\/h|kg\/m3|g\/cm3|mg\/kg|kg|lb|sq mi|mi2|mi|MB|m|ha|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|AU|MW)$")  # km²
     ELECTRONIC = None
     FRACTION = None
     KATAKANA = None
@@ -87,9 +98,12 @@ class TextNormalization(object):
         d = df.set_index('before').T.to_dict('records')[0]
         d.pop('no', None)  # no -> number
         d.pop('I', None)  # I -> the first
-        # print(d)
-        # print(len(d.keys()))
-        # print(d['#'])
+        d.pop(':', None)  # : -> to
+        d.pop('-', None)  # - -> to
+        d.pop('—', None)  # - -> to
+        d.pop('x', None)  # x -> by
+        d.pop('X', None)  # x -> tenth
+        d['፬'] = 'four'
         return d
 
     @staticmethod
@@ -165,16 +179,18 @@ class TextNormalization(object):
                 if len(text) > 2:
                     prefix = TextNormalization.digit_transcripter.number_to_words(text[:-2])
                     suffix = TextNormalization.digit_transcripter.number_to_words(text[-2:])
+                    if text[-2:].startswith('0'):
+                        suffix = 'o ' + suffix
                     text_ = prefix + ' ' + suffix
                 else:
                     text_ = TextNormalization.digit_transcripter.number_to_words(text)
                 text_ = text_.replace('-', ' ')
                 text_ = text_.replace(',', '')
+                text_ = text_.replace(' and ', ' ')
                 return text_
         except Exception as e:
             print(e)
             print(text)
-            # return text
             raise
 
     @staticmethod
@@ -198,7 +214,10 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_day(text):
-        day = int(text)
+        text_ = text
+        if not text_.isdigit():
+            text_ = text[:-2]
+        day = int(text_)
         d = {
             1: 'first',
             2: 'second',
@@ -244,6 +263,27 @@ class TextNormalization(object):
         return text_
 
     @staticmethod
+    def normalize_en_month(text):
+        d = {
+            'jan': 'january',
+            'feb': 'february',
+            'mar': 'march',
+            'apr': 'april',
+            'may': 'may',
+            'jun': 'june',
+            'june': 'june',
+            'jul': 'july',
+            'july': 'july',
+            'aug': 'august',
+            'sep': 'september',
+            'sept': 'september',
+            'oct': 'october',
+            'nov': 'november',
+            'dec': 'december'
+        }
+        return d[text.lower()]
+
+    @staticmethod
     def normalize_proper_case_concat(text):
         text_ = text.replace(' ', '')
         text_ = text.replace("'", '')
@@ -254,20 +294,52 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_telephone(text):
-        d = {
-            '1': 'one',
-            '2': 'two',
-            '3': 'three',
-            '4': 'four',
-            '5': 'five',
-            '6': 'six',
-            '7': 'seven',
-            '8': 'eight',
-            '9': 'nine',
-            '0': 'o',
-            '-': 'sil',
-            '.': 'dot'
-        }
+        d = OrderedDict([
+            ('900', 'nine hundred'),
+            ('800', 'eight hundred'),
+            ('700', 'seven hundred'),
+            ('600', 'six hundred'),
+            ('500', 'five hundred'),
+            ('400', 'four hundred'),
+            ('300', 'three hundred'),
+            ('200', 'two hundred'),
+            ('100', 'one hundred'),
+            ('1', 'one'),
+            ('2', 'two'),
+            ('3', 'three'),
+            ('4', 'four'),
+            ('5', 'five'),
+            ('6', 'six'),
+            ('7', 'seven'),
+            ('8', 'eight'),
+            ('9', 'nine'),
+            ('0', 'o'),
+            ('.', 'dot'),
+            ('-', 'sil'),
+        ])
+
+        text_ = text.replace('(', '')
+        text_ = text_.replace(')', '')
+        text_ = text_.replace(' ', '-')
+        text_ = " ".join(text_)
+        for k, v in d.items():
+            text_ = text_.replace(k, v)
+        return text_
+
+    @staticmethod
+    def normalize_leading_zero(text):
+        d = OrderedDict([
+            ('1', 'one'),
+            ('2', 'two'),
+            ('3', 'three'),
+            ('4', 'four'),
+            ('5', 'five'),
+            ('6', 'six'),
+            ('7', 'seven'),
+            ('8', 'eight'),
+            ('9', 'nine'),
+            ('0', 'o'),
+        ])
 
         text_ = text.replace('(', '')
         text_ = text_.replace(')', '')
@@ -316,31 +388,39 @@ class TextNormalization(object):
 
         normalized_text = normalized_text.replace('-', ' ')
         normalized_text = normalized_text.replace(',', '')
+        normalized_text = normalized_text.replace(' and ', ' ')
 
         return normalized_text
 
     @staticmethod
     def normalize_measure(text):
-        # m2|km|km2|km3|km²|km\/h|g\/cm3|mg\/kg|sq mi|mi|MB|m|ha|cm|nm|ft|sq ft|Gy|AU|MW
+        # m3|m2|km|km2|km3|km²|km\/h|g\/cm3|mg\/kg|kg|lb|sq mi|mi2|mi|MB|m|ha|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|AU|MW
         measure, normalized_measure = None, None
         d = OrderedDict([
             ('km/h', 'kilometers per hour'),
             ('kg/m3', 'kilograms per cubic meter'),
             ('g/cm3', 'gram per c c'),
             ('mg/kg', 'milligrams per kilogram'),
+            ('kHz', 'kilohertz'),
             ('km2', 'square kilometers'),
             ('km3', 'cubic kilometers'),
             ('km²', 'square kilometers'),
             ('km', 'kilometers'),
+            ('kg', 'kilograms'),
+            ('lb', 'pounds'),
             ('m2', 'square meters'),
+            ('m3', 'cubic meters'),
             ('sq mi', 'square miles'),
+            ('mi2', 'square miles'),
             ('mi', 'miles'),
             ('sq ft', 'square feet'),
             ('ft', 'feet'),
             ('m2', 'square meters'),
             ('cm', 'centimeters'),
             ('nm', 'nanometers'),
+            ('mm', 'millimeters'),
             ('ha', 'hectares'),
+            ('Hz', 'hertz'),
             ('Gy', 'gray'),
             ('AU', 'astronomical units'),
             ('MW', 'megawatts'),
@@ -360,9 +440,7 @@ class TextNormalization(object):
         else:
             is_per = False
 
-        normalized_text = TextNormalization.digit_transcripter.number_to_words(text_)
-        normalized_text = normalized_text.replace('-', ' ')
-        normalized_text = normalized_text.replace(',', '')
+        normalized_text = TextNormalization.normalize_decimal(text_)
 
         if is_per:
             normalized_text += ' per'
@@ -370,6 +448,27 @@ class TextNormalization(object):
         normalized_text += ' '
         normalized_text += normalized_measure
         return normalized_text
+
+    @staticmethod
+    def normalize_decimal(text):
+        text_ = TextNormalization.digit_transcripter.number_to_words(text)
+        text_ = text_.replace('-', ' ')
+        text_ = text_.replace(',', '')
+        text_ = text_.replace(' and ', ' ')
+
+        if text.isdigit():
+            if all(c == '0' for c in text) and len(text) > 1:
+                text_ = ' '.join('o' * len(text))
+            else:
+                len_leading_zero = len(text) - len(str(int(text)))
+                text_ = 'o ' * len_leading_zero + text_
+
+        if 'point' in text_:
+            prefix, suffix = text_.split('point')
+            if not suffix == ' zero':
+                suffix = suffix.replace('zero', 'o')
+            text_ = prefix + 'point' + suffix
+        return text_
 
     def normalize_all(self):
         print('start normalization')
@@ -389,32 +488,39 @@ class TextNormalization(object):
         df_result.to_csv(self.result_path, index=False, quoting=csv.QUOTE_NONNUMERIC)
 
     def normalize(self, text):
-        if text in self.d_replace.keys():
-            print('Case REPLACE', text)
-            return self.d_replace[text]
-        elif text.isupper() and text.isalpha() and len(text) > 1 and self.has_vowel(text):
-            print('Case UPPER_WORD', text)
-            return text
-        elif text.isupper() and text.isalpha() and len(text) > 1 and not self.has_vowel(text):
-            print('Case UPPER_NON_WORD', text)
-            return " ".join(text.lower())
-        elif text[:-2].isupper() and text.isalpha() and text[-2:] == "'s" and not self.has_vowel(text):
-            print('Case UPPER_S_0', text)
-            return " ".join(text[:-2].lower()) + "'s"
-        elif text[:-1].isupper() and text.isalpha() and text[-1:] == "s" and len(text) > 2 and not self.has_vowel(text):  # SEALs
-            print('Case UPPER_S_1', text)
-            return " ".join(text[:-1].lower()) + "'s"
-        elif self.DIGIT.match(text) and 1100 <= int(text) <= 2099:
+        # if text in self.d_replace.keys():
+        #     print('Case REPLACE', text)
+        #     return self.d_replace[text]
+        # elif text.isupper() and text.isalpha() and len(text) > 1 and self.has_vowel(text):
+        #     print('Case UPPER_WORD', text)
+        #     return text
+        # elif text.isupper() and text.isalpha() and len(text) > 1 and not self.has_vowel(text):
+        #     print('Case UPPER_NON_WORD', text)
+        #     return " ".join(text.lower())
+        # elif text[:-2].isupper() and text.isalpha() and text[-2:] == "'s" and not self.has_vowel(text):
+        #     print('Case UPPER_S_0', text)
+        #     return " ".join(text[:-2].lower()) + "'s"
+        # elif text[:-1].isupper() and text.isalpha() and text[-1:] == "s" and len(text) > 2 and not self.has_vowel(text):  # SEALs
+        #     print('Case UPPER_S_1', text)
+        #     return " ".join(text[:-1].lower()) + "'s"
+        if self.YEAR.match(text) and int(text.strip()) <= 2099:
             print('Case YEAR', text)
-            return TextNormalization.normalize_year(text)
-        elif self.YEAR_CALENDAR.match(text):
-            print('Case YEAR_CALENDAR', text)
-            return TextNormalization.normalize_year_calendar(text)
-        elif self.DECIMAL_COMMA_OPTIONAL.match(text):  # DECIMAL
+            if text.isdigit():
+                return TextNormalization.normalize_year(text)
+            elif text.endswith(' '):  # TODO: handle xxxties
+                return TextNormalization.normalize_year(text[:-1])
+            else:
+                return text
+        # elif self.YEAR_CALENDAR.match(text):
+        #     print('Case YEAR_CALENDAR', text)
+        #     return TextNormalization.normalize_year_calendar(text)
+        elif self.LEADING_ZERO.match(text):
+            print('Case LEADING_ZERO', text)
+            text_ = TextNormalization.normalize_leading_zero(text)
+            return text_
+        elif self.DECIMAL_COMMA_OPTIONAL.match(text):  # DECIMAL # elif
             print('Case DECIMAL_COMMA_OPTIONAL', text)
-            text_ = TextNormalization.digit_transcripter.number_to_words(text)
-            text_ = text_.replace('-', ' ')
-            text_ = text_.replace(',', '')
+            text_ = TextNormalization.normalize_decimal(text)
             return text_
         elif self.PERCENT.match(text):
             print('Case PERCENT', text)
@@ -426,18 +532,47 @@ class TextNormalization(object):
             text_ = text.replace('-', ' ')
 
             if text_.endswith('%'):
-                text_ = TextNormalization.digit_transcripter.number_to_words(text_[:-1]) + ' percent'
+                text_ = text_[:-1]
             else:
-                text_ = TextNormalization.digit_transcripter.number_to_words(text_.split(' ')[0]) + ' percent'
-            text_ = text_.replace('-', ' ')
-            text_ = text_.replace(',', '')
+                text_ = text_.split(' ')[0]
 
+            text_ = TextNormalization.normalize_decimal(text_)
+            text_ += ' percent'
             if is_minus:
                 text_ = 'minus ' + text_
             return text_
         elif self.DATE_YYYYMMDD.match(text):
             print('Case DATE_YYYYMMDD', text)
-            year, month, day = text.split('-')
+            if '-' in text:
+                delimiter = '-'
+            elif '/' in text:
+                delimiter = '/'
+            else:
+                delimiter = '.'
+            text_ = text.strip()
+            year, month, day = text_.split(delimiter)
+            try:
+                normalized_year = TextNormalization.normalize_year(year)
+                normalized_month = TextNormalization.normalize_month(month)
+                normalized_day = TextNormalization.normalize_day(day)
+                text_ = 'the {0} of {1} {2}'.format(normalized_day, normalized_month, normalized_year)
+                return text_
+            except KeyError as e:
+                print(e)
+                return text
+            except Exception as e:
+                print(e)
+                raise
+        elif self.DATE_DDMMYYYY.match(text):
+            print('Case DATE_DDMMYYYY', text)
+            if '-' in text:
+                delimiter = '-'
+            elif '/' in text:
+                delimiter = '/'
+            else:
+                delimiter = '.'
+            text_ = text.strip()
+            day, month, year = text_.split(delimiter)
             try:
                 normalized_year = TextNormalization.normalize_year(year)
                 normalized_month = TextNormalization.normalize_month(month)
@@ -452,26 +587,27 @@ class TextNormalization(object):
                 raise
         elif self.DATE_EN_DMY.match(text):
             print('Case DATE_EN_DMY', text)
-            day, month, year = text.split(' ')
+            text_ = text.strip()
+            text_ = text_.replace('.', '')
+            words = text_.split(' ')
+
+            weekday = None
+            if len(words) == 3:
+                day, month, year = words
+            else:
+                weekday, day, month, year = words
+                weekday = weekday.lower().replace(',', '')
+
             try:
                 normalized_year = TextNormalization.normalize_year(year)
-                normalized_month = month.lower()
+                if len(month) <= 4:
+                    normalized_month = TextNormalization.normalize_en_month(month.lower())
+                else:
+                    normalized_month = month.lower()
                 normalized_day = TextNormalization.normalize_day(day)
                 text_ = 'the {0} of {1} {2}'.format(normalized_day, normalized_month, normalized_year)
-                return text_
-            except KeyError as e:
-                print(e)
-                return text
-            except Exception as e:
-                print(e)
-                raise
-        elif self.DATE_EN_MY.match(text):
-            print('Case DATE_EN_MY', text)
-            month, year = text.split(' ')
-            try:
-                normalized_year = TextNormalization.normalize_year(year)
-                normalized_month = month.lower()
-                text_ = '{0} {1}'.format(normalized_month, normalized_year)
+                if weekday:
+                    text_ = weekday + ' ' +  text_
                 return text_
             except KeyError as e:
                 print(e)
@@ -481,13 +617,104 @@ class TextNormalization(object):
                 raise
         elif self.DATE_EN_MDY.match(text):
             print('Case DATE_EN_MDY', text)
-            text0 = text.replace(',', '')
-            month, day, year = text0.split(' ')
+            text_ = text.replace(',', '')
+            text_ = text_.replace('.', '')
+            words = text_.split(' ')
+
+            weekday = None
+            if len(words) == 3:
+                month, day, year = words
+            else:
+                weekday, month, day, year = words
+                weekday = weekday.lower().replace(',', '')
+
             try:
                 normalized_year = TextNormalization.normalize_year(year)
-                normalized_month = month.lower()
+                if len(month) <= 4:
+                    normalized_month = TextNormalization.normalize_en_month(month.lower())
+                else:
+                    normalized_month = month.lower()
                 normalized_day = TextNormalization.normalize_day(day)
                 text_ = '{0} {1} {2}'.format(normalized_month, normalized_day, normalized_year)
+                if weekday:
+                    text_ = weekday + ' ' +  text_
+                return text_
+            except KeyError as e:
+                print(e)
+                return text
+            except Exception as e:
+                print(e)
+                raise
+        elif self.DATE_EN_DM.match(text):
+            print('Case DATE_EN_DM', text)
+            text_ = text.strip()
+            text_ = text_.replace('.', '')
+            words = text_.split(' ')
+
+            weekday = None
+            if len(words) == 2:
+                day, month = words
+            else:
+                weekday, day, month = words
+                weekday = weekday.lower().replace(',', '')
+
+            try:
+                if len(month) <= 4:
+                    normalized_month = TextNormalization.normalize_en_month(month.lower())
+                else:
+                    normalized_month = month.lower()
+                normalized_day = TextNormalization.normalize_day(day)
+                text_ = 'the {0} of {1}'.format(normalized_day, normalized_month)
+                if weekday:
+                    text_ = weekday + ' ' +  text_
+                return text_
+            except KeyError as e:
+                print(e)
+                return text
+            except Exception as e:
+                print(e)
+                raise
+        elif self.DATE_EN_MD.match(text):
+            print('Case DATE_EN_MD', text)
+            text_ = text.strip()
+            text_ = text_.replace('.', '')
+            words = text_.split(' ')
+
+            weekday = None
+            if len(words) == 2:
+                month, day = words
+            else:
+                weekday, month, day = words
+                weekday = weekday.lower().replace(',', '')
+
+            try:
+                if len(month) <= 4:
+                    normalized_month = TextNormalization.normalize_en_month(month.lower())
+                else:
+                    normalized_month = month.lower()
+                normalized_day = TextNormalization.normalize_day(day)
+                text_ = '{0} {1}'.format(normalized_month, normalized_day)
+                if weekday:
+                    text_ = weekday + ' ' +  text_
+                return text_
+            except KeyError as e:
+                print(e)
+                return text
+            except Exception as e:
+                print(e)
+                raise
+        elif self.DATE_EN_MY.match(text):
+            print('Case DATE_EN_MY', text)
+            text_ = text.strip()
+            text_ = text_.replace('.', '')
+            month, year = text_.split(' ')
+            try:
+                normalized_year = TextNormalization.normalize_year(year)
+                if len(month) <= 4:
+                    normalized_month = TextNormalization.normalize_en_month(month.lower())
+                else:
+                    normalized_month = month.lower()
+                text_ = '{0} {1}'.format(normalized_month, normalized_year)
                 return text_
             except KeyError as e:
                 print(e)
@@ -504,15 +731,15 @@ class TextNormalization(object):
         elif self.MEASURE.match(text):
             print('Case MEASURE', text)
             return TextNormalization.normalize_measure(text)
-        elif self.PROPER_CASE_CONCAT.match(text):
-            print('Case PROPER_CASE_CONCAT', text)
-            return text
-        elif text.endswith('.') and len(text) > 1:  # LETTER
-            print('Case LETTER', text)
-            text_ = text.replace('.', '').strip().lower()
-            text_ = text_.replace(' ', '')
-            text_ = " ".join(text_)
-            return text_
+        # elif self.PROPER_CASE_CONCAT.match(text):
+        #     print('Case PROPER_CASE_CONCAT', text)
+        #     return text
+        # elif text.endswith('.') and len(text) > 1:  # LETTER
+        #     print('Case LETTER', text)
+        #     text_ = text.replace('.', '').strip().lower()
+        #     text_ = text_.replace(' ', '')
+        #     text_ = " ".join(text_)
+        #     return text_
         else:
             print('Case NO_CHANGE', text)
             return text
@@ -540,8 +767,43 @@ if __name__ == '__main__':
         '4.9 km2',
         '5km2',
         '26.9/km2',
+        '2221.8 lb',
+        '111.0 kg',
         '11.8 MB',
-        '0.7 kg/m3'
+        '0.7 kg/m3',
+        '-355',
+        '325 000',
+        '-',
+        '23.01.2015',
+        '11/2/2010',
+        '28 FEBRUARY 2008',
+        'Saturday, 28 FEBRUARY 2008',
+        'Wednesday December 5, 2007',
+        'Sunday May 6th, 2009',
+        'Saturday, 8 February 1919',
+        '22nd March 2007',
+        '22 May',
+        '27 January ',
+        'October 28',
+        'Mar 08, 1981',
+        '22/03/2010',
+        '11/4/2014',
+        '14 January ',
+        '5-18 JANUARY 2016',
+        'June 23 rd 2014',
+        '1.40',
+        '1.0',
+        '.38',
+        '2011',
+        '2012',
+        '2160',
+        '05',
+        '001',
+        '00',
+        '0',
+        '0800',
+        '013',
+        'HERBS'
     ]
 
     text_normalization = TextNormalization()
