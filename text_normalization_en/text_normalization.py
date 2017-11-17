@@ -60,46 +60,66 @@ import roman
 # 10 a.m. ET
 # OCLC => o c l c
 # Friday, 7/17/2015
+# tampabays10.com
+# # => hash
+# "61085_6","975 KiB","nine hundred seventy five kibibytes","975 KiB","Private"
+# "62797_10","805 KiB","eight hundred five kibibytes","805 KiB","Private"
+# "58690_4","9 May 328","nine May three hundred twenty eight","the ninth of may three twenty eight","Private"
+# "69389_6","22:00","twenty two","twenty two hundred","Private"
+# "59755_5","7-13 2014","7-13 two thousand fourteen","seven sil one three sil two o one four","Private"
+# "61527_1","A330","a three three o","a three thirty","Private"
+# "50598_7","SR","senior","s r","Private"
+# "45579_11","3.5 million dollar","three point five million dollar","three point five million dollars","Private"
+# "42120_5","$12.11","twelve point one one dollars","twelve dollars and eleven cents","Private"
+# "38570_11","$1,102,117.19","one million one hundred two thousand one hundred seventeen point one nine dollars","one million one hundred two thousand one hundred seventeen dollars and nineteen cents","Private"
+# "36275_1","110 million m³","one hundred ten million cubic meters","110 million m³","Private"
+# "30522_1","60 US ","sixty US","sixty","Private"
+# "18139_6","£77,039.89","seventy seven thousand thirty nine point eight nine pounds","seventy seven thousand thirty nine pounds and eighty nine pence","Private"
+# "8165_5","485 U.S. ","four hundred eighty five U.S.","four hundred eighty five","Private"
 
 class TextNormalization(object):
-    YEAR = re.compile(r"^[1-9]\d{3} ?$")
-    LEADING_ZERO = re.compile(r"^0(?=\d)(?:\d*|\d{1,3}(?:(?: |,)\d{3})*)$")
-    DECIMAL_COMMA_OPTIONAL = re.compile(r"^\-?(?=(?:\.|\d))(?:\d*|\d{1,3}(?:(?: |,)\d{3})*)(?:\.\d+)?\,? ?$")
-    ISBN = re.compile(r"^\d[-\d]{11,}\d$")
-    TELEPHONE = re.compile(r"^[\d \-\(\)]+\d$")
+    YEAR = re.compile(r"^[1-9][0-9]{3} ?$")
+    LEADING_ZERO = re.compile(r"^0(?=[0-9])(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)$")
+    DECIMAL_COMMA_OPTIONAL = re.compile(r"^\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?\,? ?$")
+    ISBN = re.compile(r"^[0-9][\-0-9]{11,}[0-9]$")
+    TELEPHONE = re.compile(r"^[0-9 \-\(\)]+[0-9]$")
     TELEPHONE_COMMON = re.compile(r"^(911|999|9-1-1|9-9-9)$")
-    IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?\d{0,2}$")
-    DECIMAL = re.compile(r"^\d*\.?\d+$")
-    CURRENCY = re.compile(r"^\-?(\$|£|€|USD|US\$|SEK|PKR|XCD) ?([1-9]{1}[0-9]{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))$|^\-?\$?([1-9]{1}\d{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))$|^\(\$?([1-9]{1}\d{0,2}(\,\d{3})*(\.\d{0,2})?|[1-9]{1}\d{0,}(\.\d{0,2})?|0(\.\d{0,2})?|(\.\d{1,2}))\)$")
-    PERCENT = re.compile(r"^\-?(?=(?:\.|\d))\d+(?:\.\d+)? ?(?:%| percent)$")
-    DATE_YYYYMMDD = re.compile(r"^[1-2]\d{3}(?:\-|\/|\.)(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12]\d|3[01])$")
-    DATE_MMDDYYYY = re.compile(r"^(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12]\d|3[01])(?:\-|\/|\.)?[1-2]\d{3}$")
-    DATE_DDMMYYYY = re.compile(r"^(0[1-9]|[12]\d|3[01])(?:\-|\/|\.)?(0[1-9]|1[012])(?:\-|\/|\.)?[1-2]\d{3}$")
-    DATE_YYYYMD = re.compile(r"^[1-2]\d{3}(?:\-|\/|\.)([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12]\d|3[01])$")
-    DATE_MDYYYY = re.compile(r"^([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12]\d|3[01])(?:\-|\/|\.)[1-2]\d{3}$")
-    DATE_DMYYYY = re.compile(r"^([1-9]|[12]\d|3[01])(?:\-|\/|\.)([1-9]|1[012])(?:\-|\/|\.)[1-2]\d{3}$")
-    DATE_MMDDYY = re.compile(r"^[0-1]?\d(?:\-|\/|\.)[0-3]?\d(?:\-|\/|\.)\d{2}$")
-    DATE_DDMMYY = re.compile(r"^[0-3]?\d(?:\-|\/|\.)[0-1]?\d(?:\-|\/|\.)\d{2}$")
-    DATE_MMDD = re.compile(r"^0\d(?:\-|\/|\.)[0-3]\d$")
-    DATE_EN_DMY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?\d{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? \d{4}$")
-    DATE_EN_DM = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?\d{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
-    DATE_EN_MD = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? \d{1,2}(?:st|nd|rd|th)? ?$")
-    DATE_EN_MY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? \d{4}$")
-    DATE_EN_MDY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? \d{1,2}(?:st|nd|rd|th)?\,? \d{4}$")
-    YEAR_CALENDAR = re.compile(r"^\d+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?$")
-    TIME = re.compile(r"^\d{4}-\d{4}$")
+    IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?[0-9]{0,2}$")
+    DECIMAL = re.compile(r"^[0-9]*\.?[0-9]+$")
+    CURRENCY = re.compile(r"^\-?(\$|£|€|USD|US\$|SEK|PKR|XCD|NOK|EGP|DKK|ATS|INR|GMD|GBP|CHF|AED|SAR|THB|UAH|PHP|PLN|ILS|ZAR|HUF|RSD|CZK|VAL|CRC|BEF|CYP|SCR|ARS|SHP|BDT|LTL|PGK|SBD|EUR|BMD|BWP|IDR|CVE|MDL|NAD|BTN|NT\$|CA\$|HK\$|AU\$|NZ\$|A\$|S\$|R\$|RS\.|RS|Rs\.|Rs) ?\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?")
+    PERCENT = re.compile(r"^\-?(?=(?:\.|[0-9]))[0-9]+(?:\.[0-9]+)? ?(?:%| percent)$")
+    DATE_YYYYMMDD = re.compile(r"^[1-2][0-9]{3}(?:\-|\/|\.)(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])$")
+    DATE_MMDDYYYY = re.compile(r"^(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?[1-2][0-9]{3}$")
+    DATE_DDMMYYYY = re.compile(r"^(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?(0[1-9]|1[012])(?:\-|\/|\.)?[1-2][0-9]{3}$")
+    DATE_YYYYMD = re.compile(r"^[1-2][0-9]{3}(?:\-|\/|\.)([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12][0-9]|3[01])$")
+    DATE_MDYYYY = re.compile(r"^([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12][0-9]|3[01])(?:\-|\/|\.)[1-2][0-9]{3}$")
+    DATE_DMYYYY = re.compile(r"^([1-9]|[12][0-9]|3[01])(?:\-|\/|\.)([1-9]|1[012])(?:\-|\/|\.)[1-2][0-9]{3}$")
+    DATE_MMDDYY = re.compile(r"^[0-1]?[0-9](?:\-|\/|\.)[0-3]?[0-9](?:\-|\/|\.)[0-9]{2}$")
+    DATE_DDMMYY = re.compile(r"^[0-3]?[0-9](?:\-|\/|\.)[0-1]?[0-9](?:\-|\/|\.)[0-9]{2}$")
+    DATE_MMDD = re.compile(r"^0[0-9](?:\-|\/|\.)[0-3][0-9]$")
+    DATE_EN_DMY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{2,4}\,?$")
+    DATE_EN_DM = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
+    DATE_EN_MD = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
+    DATE_EN_MY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
+    DATE_EN_MDY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)?\,? [0-9]{2,4}\,?$")
+    YEAR_CALENDAR = re.compile(r"^[0-9]+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?\,?$")
+    TIME = re.compile(r"^[0-9]{4}-[0-9]{4}$")
     PROPER_CASE_CONCAT = re.compile(r"^(?:[A-Z][^A-Z\s\.]+){2,}$")
-    MEASURE = re.compile(r"(^\-?((?:\d+|\d{1,3}(?:,\d{3})*)(?:\.\d+)?(?:\/| )?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|GB|AU|MW|bbl|mph|rpm|MHz|GHz|KB|kN|USD|EUR|\"\")$|^\-?(?:\d+|\d{1,3}(?:,\d{3})*)(?:\.\d+)?(?:\/| )?[gmV]$)")
+    CAPITAL_LETTER = re.compile(r"^[A-Z]{2,}$")
+    MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|\"\")$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
     ROMAN = re.compile(r"^(?=[MDCLXVI]{3,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$")
-    CLOCK = re.compile(r"\d{1,2}\:?\d{0,2} ?(a\.m\.|p\.m\.|am|pm) ?$")
+    CLOCK = re.compile(r"([0-9]{1,2}\:?[0-9]{0,2} ?(a\.m\.|p\.m\.|am|pm) ?$|^[0-9]{1,2}\: ?[0-9]{2} ?$)")
     ELECTRONIC = None
-    FRACTION = re.compile(r"(^\d+ ?)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒]| 1\/2)")
-    ALPHADIGIT = re.compile(r"^[A-Z]\d+ ?$")
+    FRACTION = re.compile(r"(^[0-9]+ ?)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒] ?$|( 1\/2| 1\/3| 2\/3| 1\/4| 3\/4| 1\/5| 2\/5| 3\/5| 4\/5| 1\/6| 5\/6| 1\/7| 1\/8| 3\/8| 5\/8| 7\/8| 1\/9| 1\/10) ?$)")
+    ALPHADIGIT = re.compile(r"^[A-Z][0-9]+ ?$")
     KATAKANA = None
     KANJI = None  # 69155, 67022
-    URL = re.compile(r"(.*(\.\d\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|www\.|\.htm|http\:|https\:).*|^\.\d\.\d*)")
+    URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
 
     digit_transcripter = inflect.engine()
+    capitals_path = '/home/ben/github/natural_language_processing/text_normalization_en/capitals'
+    with open(capitals_path, 'r') as f:
+        capitals = [x[:-1] for x in f.readlines()]
 
     def __init__(self):
         self.test_path = '/home/ben/github/natural_language_processing/text_normalization_en/en_test_2.csv'
@@ -145,6 +165,10 @@ class TextNormalization(object):
             return True
         else:
             return False
+
+    @staticmethod
+    def has_digit(text):
+        return any(char.isdigit() for char in text)
 
     @staticmethod
     def normalize_year(text, language='en_US', previous=None, following=None):
@@ -305,6 +329,7 @@ class TextNormalization(object):
     @staticmethod
     def normalize_year_calendar(text, previous=None, following=None):
         text_ = text.replace('.', '')
+        text_ = text_.replace(',', '')
         year, suffix = text_.split(' ')
         normalized_year = TextNormalization.normalize_year(year, previous=previous, following=following)
         normalized_suffix = " ".join(suffix.lower())
@@ -462,6 +487,9 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_leading_zero(text):
+        if len(text) == text.count('0'):
+            return 'zero'
+
         d = OrderedDict([
             ('1', 'one'),
             ('2', 'two'),
@@ -563,6 +591,8 @@ class TextNormalization(object):
             ('km/h', ['kilometers per hour', 'kilometer per hour']),
             ('km/s', ['kilometers per second', 'kilometer per second']),
             ('m/s', ['meters per second', 'meter per second']),
+            ('kWh/m3', ['kilo watt hours per cubic meter', 'kilo watt hour per cubic meter']),
+            ('kWh/m', ['kilo watt hours per meter', 'kilo watt hour per meter']),
             ('kcal/g', ['kilo calories per gram', 'kilo calorie per gram']),
             ('kJ/g', ['kilo joules per gram', 'kilo joules per gram']),
             ('kJ/m³', ['kilo joules per cubic meter', 'kilo joules per cubic meter']),
@@ -574,14 +604,18 @@ class TextNormalization(object):
             ('mg/kg', ['milligrams per kilogram', 'milligram per kilogram']),
             ('mg/L', ['milligrams per liter', 'milligram per liter']),
             ('m³/s', ['cubic meters per second', 'cubic meter per second']),
+            ('kg/m', ['kilograms per meter', 'kilogram per meter']),
+            ('g/km', ['grams per kilometer', 'gram per kilometer']),
             ('mAh', ['milli amp hours', 'milli amp hour']),
             ('mph', ['miles per hour', 'mile per hour']),
             ('rpm', ['revolutions per minute', 'revolution per minute']),
             ('bbl', ['barrels', 'barrel']),
             ('mol', ['moles', 'mole']),
+            ('hrs', ['hours', 'hour']),
             ('kHz', ['kilohertz', 'kilohertz']),
             ('MHz', ['megahertz', 'megahertz']),
             ('GHz', ['gigahertz', 'gigahertz']),
+            ('MPa', ['megapascals', 'megapascal']),
             ('KiB', ['kibibytes', 'kibibyte']),
             ('GPa', ['giga pascals', 'giga pascal']),
             ('kPa', ['kilopascals', 'kilopascal']),
@@ -594,12 +628,14 @@ class TextNormalization(object):
             ('km', ['kilometers', 'kilometer']),
             ('Kg', ['kilograms', 'kilogram']),
             ('kg', ['kilograms', 'kilogram']),
+            ('kJ', ['kilo joules', 'kilo joule']),
             ('kV', ['kilo volts', 'kilo volt']),
             ('mV', ['milli volts', 'milli volt']),
             ('kW', ['kilowatts', 'kilowatt']),
             ('KB', ['kilobytes', 'kilobyte']),
             ('lbs', ['pounds', 'pound']),
             ('lb', ['pounds', 'pound']),
+            ('oz', ['ounces', 'ounce']),
             ('m2', ['square meters', 'square meter']),
             ('m²', ['square meters', 'square meter']),
             ('m3', ['cubic meters', 'cubic meter']),
@@ -622,6 +658,7 @@ class TextNormalization(object):
             ('ha', ['hectares', 'hectare']),
             ('Hz', ['hertz', 'hertz']),
             ('kN', ['kilonewtons', 'kilonewton']),
+            ('yd', ['yards', 'yard']),
             ('Gy', ['grays', 'gray']),
             ('GB', ['gigabytes', 'gigabyte']),
             ('AU', ['astronomical units', 'astronomical unit']),
@@ -646,6 +683,7 @@ class TextNormalization(object):
 
         text_ = text_.replace('metre', 'meter')
         text_ = text_.replace('litre', 'liter')
+        text_ = re.sub(r'([0-9])\s+([0-9])', r'\1\2', text_)
 
         if text_.endswith('/'):
             is_per = True
@@ -664,7 +702,7 @@ class TextNormalization(object):
         normalized_text = ' '.join(words)
 
         if normalized_measure:
-            if normalized_text in ['one', '']:
+            if normalized_text in ['one', '', 'per']:
                 normalized_measure = normalized_measure[1]
             else:
                 normalized_measure = normalized_measure[0]
@@ -708,7 +746,24 @@ class TextNormalization(object):
             '⅞': ' and seven eighths',
             '⅑': ' and a nineth',
             '⅒': ' and a tenth',
-            '1/2': ' and a half'
+            '1/2': ' and a half',
+            '1/3': ' and a third',
+            '2/3': ' and two thirds',
+            '1/4': ' and a quarter',
+            '3/4': ' and three quarters',
+            '1/5': ' and a fifth',
+            '2/5': ' and two fifths',
+            '3/5': ' and three fifths',
+            '4/5': ' and four fifths',
+            '1/6': ' and a sixth',
+            '5/6': ' and five sixths',
+            '1/7': ' and a seventh',
+            '1/8': ' and an eighth',
+            '3/8': ' and three eighths',
+            '5/8': ' and five eighths',
+            '7/8': ' and seven eighths',
+            '1/9': ' and a nineth',
+            '1/10': ' and a tenth',
         }
         for k, v in d.items():
             if k in text:
@@ -723,20 +778,99 @@ class TextNormalization(object):
     def normalize_currency(text):
         d = OrderedDict([
             ('USD', 'united states dollars'),
-            ('US$', 'united states dollars'),
-            ('SEK', 'swedish kronas'),
-            ('PKR', 'pakistan rupees'),
-            ('XCD', 'eastern caribbean dollars'),
-            ('$', 'dollars'),
-            ('£', 'pounds'),
+            ('US$', 'dollars'),
+            ('SEK', 'swedish kronor'),
+            ('PKR', 'pakistani rupees'),
+            ('XCD', 'east caribbean dollars'),
+            ('NOK', 'norwegian kroner'),
+            ('EGP', 'egyptian pounds'),
+            ('DKK', 'danish kroner'),  # ore
+            ('ATS', 'austrian schillings'),
+            ('INR', 'indian rupees'),
+            ('GMD', 'gambian dalasis'),
+            ('GBP', 'pounds'),
+            ('CHF', 'swiss francs'),
+            ('AED', 'united arab emirates dirhams'),
+            ('SAR', 'saudi riyals'),
+            ('THB', 'thai bahts'),
+            ('UAH', 'ukrainian hryvnias'),
+            ('PHP', 'philippine pesos'),
+            ('PLN', 'polish zlotys'),
+            ('ILS', 'israeli new sheqels'),
+            ('ZAR', 'south african rands'),
+            ('HUF', 'hungarian forints'),
+            ('RSD', 'serbian dinars'),
+            ('CZK', 'czech korunas'),
+            ('VAL', 'vatican liras'),
+            ('CRC', 'costa rican colons'),
+            ('BEF', 'belgian francs'),
+            ('CYP', 'cypriot pounds'),
+            ('SCR', 'seychelles rupees'),
+            ('ARS', 'argentine pesos'),
+            ('SHP', 'saint helena pounds'),
+            ('BDT', 'bangladeshi takas'),
+            ('LTL', 'lithuanian litass'),
+            ('PGK', 'papua new guinean kina'),
+            ('SBD', 'solomon islands dollars'),
+            ('EUR', 'euros'),
+            ('BMD', 'bermudian dollars'),
+            ('BWP', 'botswana pulas'),
+            ('IDR', 'indonesian rupiahs'),
+            ('CVE', 'cape verde escudos'),
+            ('MDL', 'moldovan leus'),
+            ('NAD', 'namibian dollars'),
+            ('BTN', 'bhutanese ngultrum'),
+            ('NT$', 'dollars'),
+            ('CA$', 'dollars'),
+            ('HK$', 'dollars'),
+            ('AU$', 'dollars'),
+            ('NZ$', 'dollars'),
+            ('A$', 'dollars'),
+            ('S$', 'dollars'),
+            ('R$', 'reals'),
+            ('DM', 'german marks'),
+            ('TK', 'takas'),
+            ('RS.', 'rupees'),
+            ('RS', 'rupees'),
+            ('Rs.', 'rupees'),
+            ('Rs', 'rupees'),
+            ('$', 'dollars'),  # dollars
+            ('£', 'pounds'),  # pence
             ('€', 'euros'),
         ])
+
         for k, v in d.items():
             if k in text:
                 text = text.replace(k, '')
+                text = re.sub(r'([0-9])\s+([0-9])', r'\1\2', text)
+                if len(text) > 8:
+                    if text.endswith('thousand') and text[-9].isdigit():
+                        text = text[:-8] + ' thousand'
+                    elif text.endswith('trillion') and text[-9].isdigit():
+                        text = text[:-8] + ' trillion'
+
+                if len(text) > 7:
+                    if text.endswith('billion') and text[-8].isdigit():
+                        text = text[:-7] + ' billion'
+                    elif text.endswith('million') and text[-8].isdigit():
+                        text = text[:-7] + ' million'
+
+                if len(text) > 2:
+                    if text.endswith('bn') and text[-3].isdigit():
+                        text = text[:-2] + ' billion'
+
+                if len(text) > 1:
+                    if text[-1] in ['M', 'm'] and text[-2].isdigit():
+                        text = text[:-1] + ' million'
+                    elif text[-1] in ['K', 'k'] and text[-2].isdigit():
+                        text = text[:-1] + ' thousand'
+                    elif text[-1] in ['T', 't'] and text[-2].isdigit():
+                        text = text[:-1] + ' trillion'
+                    elif text[-1] in ['B', 'b'] and text[-2].isdigit():
+                        text = text[:-1] + ' billion'
                 text = text + ' ' + v
                 break
-        return text
+        return text.lower()
 
     @staticmethod
     def normalize_decimal(text):
@@ -777,6 +911,15 @@ class TextNormalization(object):
             int_ = str(roman.fromRoman(text))
             text_ = TextNormalization.normalize_decimal(int_)
             return text_
+
+    def normalize_capital_letter(text):
+        if len(text) == 2:
+            if not text in TextNormalization.capitals:
+                return ' '.join(list(text.lower()))
+            else:
+                return text
+        else:
+            return text
 
     @staticmethod
     def normalize_url(text):
@@ -849,9 +992,37 @@ class TextNormalization(object):
 
         if isinstance(text, float) and pd.isnull(text):
             return ""
-        if text == '-' and (previous.isdigit() or following.isdigit()):
-            return 'to'
-        if self.YEAR_CALENDAR.match(text):
+        if text in ['-'] and (previous or following):
+            if (previous.isdigit() or following.isdigit()):
+                return 'to'
+            else:
+                return text
+        elif text in ['~', ':'] and previous and following:
+            if (previous.isdigit() and following.isdigit()):
+                return 'to'
+            else:
+                return text
+        elif text in ['x', 'x '] and previous and following:
+            if (TextNormalization.has_digit(previous) and TextNormalization.has_digit(following)):
+                return 'by'
+            else:
+                return text
+        elif text == 'min' and previous:
+            if previous.isdigit():
+                return 'minute'
+            else:
+                return text
+        elif text in ['no', 'No', 'NO'] and following:
+            if following.isdigit():
+                return 'number'
+            else:
+                return text
+        elif text in ['#'] and following:
+            if not following.isdigit():
+                return 'hash'
+            else:
+                return 'number'
+        elif self.YEAR_CALENDAR.match(text):
             print('Case YEAR_CALENDAR', text)
             return TextNormalization.normalize_year_calendar(text, previous=previous, following=following)
         elif self.YEAR.match(text) and 1001 <= int(text.strip()) <= 2099:
@@ -982,6 +1153,8 @@ class TextNormalization(object):
         elif self.DATE_EN_DMY.match(text):
             print('Case DATE_EN_DMY', text)
             text_ = text.strip()
+            if text.strip().startswith('the '):
+                text_ = text_[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
             words = text_.split(' ')
@@ -1005,6 +1178,7 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
+
                 return text_
             except KeyError as e:
                 print(e)
@@ -1014,7 +1188,10 @@ class TextNormalization(object):
                 raise
         elif self.DATE_EN_MDY.match(text):
             print('Case DATE_EN_MDY', text)
-            text_ = text.replace('.', '')
+            text_ = text.strip()
+            if text.strip().startswith('the '):
+                text_ = text[4:]
+            text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
             words = text_.split(' ')
 
@@ -1037,6 +1214,7 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
+
                 return text_
             except KeyError as e:
                 print(e)
@@ -1197,6 +1375,9 @@ class TextNormalization(object):
         elif self.PROPER_CASE_CONCAT.match(text):
             print('Case PROPER_CASE_CONCAT', text)
             return text
+        elif self.CAPITAL_LETTER.match(text):
+            print('Case CAPITAL_LETTER')
+            return TextNormalization.normalize_capital_letter(text)
         # elif text.endswith('.') and len(text) > 1:
         #     print('Case LETTER', text)
         #     text_ = text.replace('.', '').strip().lower()
@@ -1335,7 +1516,67 @@ if __name__ == '__main__':
         '3700 BC',
         '12:35 a.m.',
         'US$100,000',
-        '$ 16.8 billion'
+        '$ 16.8 billion',
+        '１',
+        'per km2',
+        '2: 45',
+        '00',
+        '51 BCE,',
+        '415 B.C.',
+        '2 Feb 70',
+        '7-13 2014',
+        'A330',
+        'the 27 June 2007',
+        '7 770',
+        '7 770ha',
+        '7770ha',
+        'NOK 1.2 billion',
+        '6:00',
+        '22 feb 2016',
+        '£295m',
+        'KB',
+        '9 December 2005,',
+        '$303.8m',
+        '$500M',
+        'C64 ',
+        '$120 000',
+        'LB',
+        '/ km²',
+        '$44.00',
+        '35059-098',
+        'US$5 million',
+        '$300,000',
+        '$300k',
+        '$4billion',
+        '$12B',
+        'XK',
+        'CRC2142',
+        'CYP-450',
+        'MDL-72222',
+        'BMD-1',
+        'DKK 50 000',
+        'NAD83',
+        'PHP387M',
+        '7:30PM IST',
+        '04.20pm IST',
+        '16:53:20 UTC',  # and twenty seconds
+        '12:32 UTC',
+        '06:00 UTC',
+        '15:00 GMT'
+        '18:37 GMT',
+        '02:30 PM ET',
+        '4pm ET',
+        '4:06 PM ET',
+        '10:29 PM ET',
+        '10 p.m. ET',
+        '9:00 pm ET',
+        '11:14 PM EDT',
+        '8:45 PM CST',
+        '2:08PM PDT',
+        '8:00 AM PST',
+        '10:24am EST',
+        '8 pm AEST',
+        '3.32pm GMT'
     ]
 
     text_normalization = TextNormalization()
