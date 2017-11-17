@@ -114,6 +114,8 @@ class TextNormalization(object):
     ALPHADIGIT = re.compile(r"^[A-Z][0-9]+ ?$")
     KATAKANA = None
     KANJI = None  # 69155, 67022
+    HASHTAG = re.compile(r"^#.+$")
+    HYPHEN = re.compile(r"^[A-Za-z]+\-$")
     URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|\.eu|\.is|\.no|\.ph|\.gr|\.se|\.jp|\.xyz|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
 
     digit_transcripter = inflect.engine()
@@ -938,7 +940,7 @@ class TextNormalization(object):
 
     def normalize_capital_letter(text):
         if len(text) >= 2:
-            if not text in TextNormalization.capitals:
+            if not text in TextNormalization.capitals and not TextNormalization.has_vowel(text):
                 return ' '.join(list(text.lower()))
             else:
                 return text
@@ -970,6 +972,20 @@ class TextNormalization(object):
         url = url.replace('9', 'n i n e')
         url = url.replace('0', 'o')
         return url
+
+    @staticmethod
+    def normalize_hash_tag(text):
+        text = text.replace('#', '')
+        text = text.lower()
+        text = 'hash tag ' + text
+        return text
+
+    @staticmethod
+    def normalize_hyphen(text):
+        text = text.replace('-', '')
+        text = text.lower()
+        text = ' '.join(list(text))
+        return text
 
     def normalize_all(self):
         print('start normalization')
@@ -1398,6 +1414,12 @@ class TextNormalization(object):
         elif self.URL.match(text):
             print('Case URL', text)
             return TextNormalization.normalize_url(text)
+        elif self.HASHTAG.match(text):
+            print('Case HASHTAG', text)
+            return TextNormalization.normalize_hash_tag(text)
+        elif self.HYPHEN.match(text):
+            print('Case HYPHEN', text)
+            return TextNormalization.normalize_hyphen(text)
         elif self.PROPER_CASE_CONCAT.match(text):
             print('Case PROPER_CASE_CONCAT', text)
             return text
@@ -1621,6 +1643,9 @@ if __name__ == '__main__':
         ('19617 12-JUL-1999 MINISTERIO DE JUSTICIA', None),
         ('(1904) 1 CLR 497', None),
         ('(1992) 2 SCC 105', None),
+        ('cv-', None),
+        ('pyran-', None),
+        ('#EndMommyWars', 'hash tag endmommywars'),  # hash tag
         ('18:30:00 GMT', 'eighteen hours thirty minutes and zero seconds g m t'),
         ('15:37.39', 'fifteen minutes thirty seven seconds and thirty nine milliseconds'),
     ]
