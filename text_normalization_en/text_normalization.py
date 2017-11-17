@@ -1032,8 +1032,8 @@ class TextNormalization(object):
 
         if isinstance(text, float) and pd.isnull(text):
             return ""
-        if text in ['-'] and (previous or following):
-            if (previous.isdigit() or following.isdigit()):
+        if text in ['-'] and (previous and following):
+            if (previous.isdigit() and following.isdigit()):
                 return 'to'
             else:
                 return text
