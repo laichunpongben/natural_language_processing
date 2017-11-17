@@ -86,7 +86,7 @@ class TextNormalization(object):
     TELEPHONE_COMMON = re.compile(r"^(911|999|9-1-1|9-9-9)$")
     IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?[0-9]{0,2}$")
     DECIMAL = re.compile(r"^[0-9]*\.?[0-9]+$")
-    CURRENCY = re.compile(r"^\-?(\$|£|€|USD|US\$|SEK|PKR|XCD|NOK|EGP|DKK|ATS|INR|GMD|GBP|CHF|AED|SAR|THB|UAH|PHP|PLN|ILS|ZAR|HUF|RSD|CZK|VAL|CRC|BEF|CYP|SCR|ARS|SHP|BDT|LTL|PGK|SBD|EUR|BMD|BWP|IDR|CVE|MDL|NAD|BTN|NT\$|CA\$|HK\$|AU\$|NZ\$|A\$|S\$|R\$|RS\.|RS|Rs\.|Rs) ?\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?")
+    CURRENCY = re.compile(r"^\-?(\$|£|€|¥|USD|US\$|SEK|PKR|XCD|NOK|EGP|DKK|ATS|INR|GMD|GBP|CHF|AED|SAR|THB|UAH|PHP|PLN|ILS|ZAR|HUF|RSD|CZK|VAL|CRC|BEF|CYP|SCR|ARS|SHP|BDT|LTL|PGK|SBD|EUR|BMD|BWP|IDR|CVE|MDL|NAD|BTN|NT\$|CA\$|HK\$|AU\$|NZ\$|A\$|S\$|R\$|RS\.|RS|Rs\.|Rs) ?\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?")
     PERCENT = re.compile(r"^\-?(?=(?:\.|[0-9]))[0-9]+(?:\.[0-9]+)? ?(?:%| percent)$")
     DATE_YYYYMMDD = re.compile(r"^[1-2][0-9]{3}(?:\-|\/|\.)(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])$")
     DATE_MMDDYYYY = re.compile(r"^(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?[1-2][0-9]{3}$")
@@ -97,24 +97,24 @@ class TextNormalization(object):
     DATE_MMDDYY = re.compile(r"^[0-1]?[0-9](?:\-|\/|\.)[0-3]?[0-9](?:\-|\/|\.)[0-9]{2}$")
     DATE_DDMMYY = re.compile(r"^[0-3]?[0-9](?:\-|\/|\.)[0-1]?[0-9](?:\-|\/|\.)[0-9]{2}$")
     DATE_MMDD = re.compile(r"^0[0-9](?:\-|\/|\.)[0-3][0-9]$")
-    DATE_EN_DMY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{2,4}\,?$")
+    DATE_EN_DMY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,? ?[0-9]{1,2}(?:st|nd|rd|th)?[ \-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{2,4}\,?$")
     DATE_EN_DM = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
     DATE_EN_MD = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
     DATE_EN_MY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
-    DATE_EN_MDY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)?\,? [0-9]{2,4}\,?$")
+    DATE_EN_MDY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{1,2}(?:st|nd|rd|th)?\,?[ \-][0-9]{2,4}\,?$")
     YEAR_CALENDAR = re.compile(r"^[0-9]+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?\,?$")
     TIME = re.compile(r"^[0-9]{4}-[0-9]{4}$")
     PROPER_CASE_CONCAT = re.compile(r"^(?:[A-Z][^A-Z\s\.]+){2,}$")
     CAPITAL_LETTER = re.compile(r"^[A-Z]{2,}$")
-    MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|\"\")$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
+    MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|kb|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|\"\")$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
     ROMAN = re.compile(r"^(?=[MDCLXVI]{3,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$")
-    CLOCK = re.compile(r"([0-9]{1,2}\:?[0-9]{0,2} ?(a\.m\.|p\.m\.|am|pm) ?$|^[0-9]{1,2}\: ?[0-9]{2} ?$)")
+    CLOCK = re.compile(r"([0-9]{1,2}[\:\.]?[0-9]{0,2} ?(a\.m\.|p\.m\.|am|pm|AM|PM) ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$|^[0-9]{1,2}[\:\.] ?[0-9]{2} ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$)")
     ELECTRONIC = None
     FRACTION = re.compile(r"(^[0-9]+ ?)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒] ?$|( 1\/2| 1\/3| 2\/3| 1\/4| 3\/4| 1\/5| 2\/5| 3\/5| 4\/5| 1\/6| 5\/6| 1\/7| 1\/8| 3\/8| 5\/8| 7\/8| 1\/9| 1\/10) ?$)")
     ALPHADIGIT = re.compile(r"^[A-Z][0-9]+ ?$")
     KATAKANA = None
     KANJI = None  # 69155, 67022
-    URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
+    URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|\.eu|\.is|\.no|\.ph|\.gr|\.se|\.jp|\.xyz|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
 
     digit_transcripter = inflect.engine()
     capitals_path = '/home/ben/github/natural_language_processing/text_normalization_en/capitals'
@@ -664,6 +664,7 @@ class TextNormalization(object):
             ('AU', ['astronomical units', 'astronomical unit']),
             ('MW', ['megawatts', 'megawatt']),
             ('MB', ['megabytes', 'megabyte']),
+            ('kb', ['kilobits', 'kilobit']),
             ('a.m.', ['a m', 'a m']),
             ('p.m.', ['p m', 'p m']),
             ('am', ['a m', 'a m']),
@@ -717,12 +718,34 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_clock(text):
+        has_suffix = False
         text = text.replace('a.m.', ' a m')
         text = text.replace('p.m.', ' p m')
         text = text.replace('am', ' a m')
         text = text.replace('pm', ' p m')
+        text = text.replace('AM', ' a m')
+        text = text.replace('PM', ' p m')
+        text = text.replace('.', ':')
+
+        for suffix in ['AEST', 'IST', 'UTC', 'GMT', 'EST', 'EDT', 'EST', 'PDT', 'PST', 'CST', 'ET']:
+            if suffix in text:
+                has_suffix = True
+                text = text.replace(suffix, '')
+                break
+
+        if (text.endswith(':00') or text.endswith(':00 ')) and text.count(':') < 2:
+            text = text.replace(':00', '')
+            if int(text.strip()) <= 12:
+                text += " o'clock"
+            else:
+                text += ' hundred'
         text = text.replace(':00', ' ')
         text = text.replace(':', ' ')
+        text = text.lstrip('0')
+
+        if has_suffix:
+            text += ' '
+            text += ' '.join(list(suffix.lower()))
         return text
 
     @staticmethod
@@ -837,6 +860,7 @@ class TextNormalization(object):
             ('$', 'dollars'),  # dollars
             ('£', 'pounds'),  # pence
             ('€', 'euros'),
+            ('¥', 'yen')
         ])
 
         for k, v in d.items():
@@ -913,7 +937,7 @@ class TextNormalization(object):
             return text_
 
     def normalize_capital_letter(text):
-        if len(text) == 2:
+        if len(text) >= 2:
             if not text in TextNormalization.capitals:
                 return ' '.join(list(text.lower()))
             else:
@@ -1157,6 +1181,7 @@ class TextNormalization(object):
                 text_ = text_[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
+            text_ = text_.replace('-', ' ')
             words = text_.split(' ')
 
             weekday = None
@@ -1193,6 +1218,7 @@ class TextNormalization(object):
                 text_ = text[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
+            text_ = text_.replace('-', ' ')
             words = text_.split(' ')
 
             weekday = None
@@ -1390,204 +1416,226 @@ class TextNormalization(object):
 
 if __name__ == '__main__':
     test_cases = [
-        'OutRun',
-        '0-306-80821-8',
-        '2012-08-16',
-        '432 BCE',
-        '432 BC.',
-        '53 CE',
-        '4000 B.C.',
-        'WORLD',
-        'O. C.',
-        "D'Amigo",
-        "-0.7%",
-        "25%",
-        "1.08 percent",
-        '0-306-80821-8',
-        '0 9512309 6 4',
-        '127.0.0.1',
-        '192.168.5.20/24',
-        '2500 MW',
-        '4.9 km2',
-        '5km2',
-        '26.9/km2',
-        '2221.8 lb',
-        '111.0 kg',
-        '11.8 MB',
-        '0.7 kg/m3',
-        '-355',
-        '325 000',
-        '-',
-        '23.01.2015',
-        '11/2/2010',
-        '28 FEBRUARY 2008',
-        'Saturday, 28 FEBRUARY 2008',
-        'Wednesday December 5, 2007',
-        'Sunday May 6th, 2009',
-        'Saturday, 8 February 1919',
-        '22nd March 2007',
-        '22 May',
-        '27 January ',
-        'October 28',
-        'Mar 08, 1981',
-        '22/03/2010',
-        '11/4/2014',
-        '14 January ',
-        '5-18 JANUARY 2016',
-        'June 23 rd 2014',
-        '11-20-2009',
-        '2-9-2011',
-        '01-01-90',
-        '20081981',
-        '3/17/07',
-        '1.40',
-        '1.0',
-        '.38',
-        '2011',
-        '2012',
-        '2160',
-        '05',
-        '001',
-        '00',
-        '0',
-        '0800',
-        '013',
-        'HERBS',
-        '1km',
-        '１',
-        '01 - 6',
-        'CXIII',
-        '0.95 g/cm3',
-        '(1966)3',
-        '08.08',
-        '978-0-300-11465-2',
-        '9780521653947',
-        '05 250',
-        'o',
-        '0',
-        '33130',
-        '91430',
-        '38115',
-        '27""',
-        '.0',
-        '9-1-1',
-        '911',
-        '999',
-        '26787',
-        '57950',
-        '9268',
-        '60',
-        '2300-0200',
-        'I',
-        '',
-        '10:30 p.m.',
-        '1000 BCE.',
-        '６',
-        '0100-0400',
-        'Playbill.com',
-        '4/24/00',
-        '3.3 million m²',
-        '21 years',
-        '15,500 km2',
-        '10 a.m.',
-        '-2,000/ha',
-        '-2,000 ha',
-        '4 ½',
-        '4½',
-        '¼',
-        '1¼ mi',
-        '2, ',
-        '18.7 g',
-        'C107 ',
-        'C613',
-        '3.25 million',
-        '83 %',
-        '78.03 %',
-        '450 mV',
-        '8 May,',
-        '80, ',
-        'May 11th 2011',
-        'Friday, 7/17/2015',
-        '3 80 GB',
-        '/m',
-        '8 million m²',
-        '$745,244',
-        '100 metres',
-        '3700 BC',
-        '12:35 a.m.',
-        'US$100,000',
-        '$ 16.8 billion',
-        '１',
-        'per km2',
-        '2: 45',
-        '00',
-        '51 BCE,',
-        '415 B.C.',
-        '2 Feb 70',
-        '7-13 2014',
-        'A330',
-        'the 27 June 2007',
-        '7 770',
-        '7 770ha',
-        '7770ha',
-        'NOK 1.2 billion',
-        '6:00',
-        '22 feb 2016',
-        '£295m',
-        'KB',
-        '9 December 2005,',
-        '$303.8m',
-        '$500M',
-        'C64 ',
-        '$120 000',
-        'LB',
-        '/ km²',
-        '$44.00',
-        '35059-098',
-        'US$5 million',
-        '$300,000',
-        '$300k',
-        '$4billion',
-        '$12B',
-        'XK',
-        'CRC2142',
-        'CYP-450',
-        'MDL-72222',
-        'BMD-1',
-        'DKK 50 000',
-        'NAD83',
-        'PHP387M',
-        '7:30PM IST',
-        '04.20pm IST',
-        '16:53:20 UTC',  # and twenty seconds
-        '12:32 UTC',
-        '06:00 UTC',
-        '15:00 GMT'
-        '18:37 GMT',
-        '02:30 PM ET',
-        '4pm ET',
-        '4:06 PM ET',
-        '10:29 PM ET',
-        '10 p.m. ET',
-        '9:00 pm ET',
-        '11:14 PM EDT',
-        '8:45 PM CST',
-        '2:08PM PDT',
-        '8:00 AM PST',
-        '10:24am EST',
-        '8 pm AEST',
-        '3.32pm GMT'
+        ('OutRun', None),
+        ('0-306-80821-8', None),
+        ('2012-08-16', None),
+        ('432 BCE', None),
+        ('432 BC.', None),
+        ('53 CE', None),
+        ('4000 B.C.', None),
+        ('WORLD', None),
+        ('O. C.', None),
+        ("D'Amigo", None),
+        ("-0.7%", None),
+        ("25%", None),
+        ("1.08 percent", None),
+        ('0-306-80821-8', None),
+        ('0 9512309 6 4', None),
+        ('127.0.0.1', None),
+        ('192.168.5.20/24', None),
+        ('2500 MW', None),
+        ('4.9 km2', None),
+        ('5km2', None),
+        ('26.9/km2', None),
+        ('2221.8 lb', None),
+        ('111.0 kg', None),
+        ('11.8 MB', None),
+        ('0.7 kg/m3', None),
+        ('-355', None),
+        ('325 000', None),
+        ('-', None),
+        ('23.01.2015', None),
+        ('11/2/2010', None),
+        ('28 FEBRUARY 2008', None),
+        ('Saturday, 28 FEBRUARY 2008', None),
+        ('Wednesday December 5, 2007', None),
+        ('Sunday May 6th, 2009', None),
+        ('Saturday, 8 February 1919', None),
+        ('22nd March 2007', None),
+        ('22 May', None),
+        ('27 January ', None),
+        ('October 28', None),
+        ('Mar 08, 1981', None),
+        ('22/03/2010', None),
+        ('11/4/2014', None),
+        ('5-18 JANUARY 2016', None),
+        ('14 January ', None),
+        ('June 23 rd 2014', None),
+        ('11-20-2009', None),
+        ('2-9-2011', None),
+        ('01-01-90', None),
+        ('20081981', None),
+        ('3/17/07', None),
+        ('1.40', None),
+        ('1.0', None),
+        ('.38', None),
+        ('2011', None),
+        ('2012', None),
+        ('2160', None),
+        ('05', None),
+        ('001', None),
+        ('00', None),
+        ('0', None),
+        ('0800', None),
+        ('013', None),
+        ('HERBS', None),
+        ('1km', None),
+        ('１', None),
+        ('01 - 6', None),
+        ('CXIII', None),
+        ('0.95 g/cm3', None),
+        ('08.08', None),
+        ('(1966)3', None),
+        ('978-0-300-11465-2', None),
+        ('9780521653947', None),
+        ('05 250', None),
+        ('o', None),
+        ('0', None),
+        ('33130', None),
+        ('91430', None),
+        ('38115', None),
+        ('27""', None),
+        ('.0', None),
+        ('9-1-1', None),
+        ('911', None),
+        ('999', None),
+        ('26787', None),
+        ('57950', None),
+        ('9268', None),
+        ('60', None),
+        ('2300-0200', None),
+        ('I', None),
+        ('', None),
+        ('10:30 p.m.', None),
+        ('1000 BCE.', None),
+        ('６', None),
+        ('0100-0400', None),
+        ('Playbill.com', None),
+        ('4/24/00', None),
+        ('3.3 million m²', None),
+        ('21 years', 'twenty one years'),
+        ('15,500 km2', 'fifteen thousand five hundred square kilometers'),
+        ('10 a.m.', 'ten a m'),
+        ('-2,000/ha', None),
+        ('-2,000 ha', None),
+        ('4 ½', 'four and a half'),
+        ('4½', 'four and a half'),
+        ('¼', 'one quarter'),
+        ('1¼ mi', None),
+        ('2, ', 'two'),
+        ('18.7 g', 'eighteen point seven grams'),
+        ('C107 ', None),
+        ('C613', None),
+        ('3.25 million', None),
+        ('83 %', 'eighty three percent'),
+        ('78.03 %', None),
+        ('450 mV', None),
+        ('8 May,', None),
+        ('80, ', 'eighty'),
+        ('May 11th 2011', None),
+        ('Friday, 7/17/2015', None),
+        ('3 80 GB', None),
+        ('/m', 'per meter'),
+        ('8 million m²', 'eight million square meters'),
+        ('$745,244', None),
+        ('100 metres', 'one hundred meters'),
+        ('3700 BC', None),
+        ('12:35 a.m.', 'twelve thirty five a m'),
+        ('US$100,000', 'one hundred thousand dollars'),
+        ('$ 16.8 billion', 'sixteen point eight billion dollars'),
+        ('１', '１'),
+        ('per km2', 'per square kilometer'),
+        ('2: 45', 'two forty five'),
+        ('00', 'zero'),
+        ('51 BCE,', None),
+        ('415 B.C.', None),
+        ('2 Feb 70', None),
+        ('7-13 2014', None),
+        ('A330', None),
+        ('the 27 June 2007', None),
+        ('7 770', None),
+        ('7 770ha', None),
+        ('7770ha', None),
+        ('NOK 1.2 billion', None),
+        ('6:00', "six o'clock"),
+        ('16:00', "sixteen hundred"),
+        ('22 feb 2016', None),
+        ('£295m', 'two hundred ninety five million pounds'),
+        ('KB', None),
+        ('9 December 2005,', None),
+        ('$303.8m', None),
+        ('$500M', None),
+        ('C64 ', None),
+        ('$120 000', None),
+        ('LB', None),
+        ('/ km²', None),
+        ('$44.00', None),
+        ('35059-098', None),
+        ('US$5 million', None),
+        ('$300,000', None),
+        ('$300k', None),
+        ('$4billion', 'four billion dollars'),
+        ('$12B', 'twelve billion dollars'),
+        ('XK', 'x k'),
+        ('CRC2142', 'two thousand one hundred forty two costa rican colons'),
+        ('CYP-450', 'minus four hundred fifty cypriot pounds'),
+        ('MDL-72222', 'minus seventy two thousand two hundred twenty two moldovan leus'),
+        ('BMD-1', None),
+        ('DKK 50 000', None),
+        ('NAD83', None),
+        ('PHP387M', None),
+        ('7:30PM IST', 'seven thirty p m i s t'),
+        ('04.20pm IST', 'four twenty p m i s t'),
+        ('16:53:20 UTC', None),  # and twenty seconds
+        ('12:32 UTC', 'twelve thirty two u t c'),
+        ('06:00 UTC', "six o'clock u t c"),
+        ('15:00 GMT', 'fifteen hundred g m t'),
+        ('18:37 GMT', 'eighteen thirty seven g m t'),
+        ('02:30 PM ET', 'two thirty p m e t'),
+        ('4pm ET', 'four p m e t'),
+        ('4:06 PM ET', 'four o six p m e t'),
+        ('10:29 PM ET', 'ten twenty nine p m e t'),
+        ('10 p.m. ET', 'ten p m e t'),
+        ('9:00 pm ET', 'nine p m e t'),
+        ('11:14 PM EDT', 'eleven fourteen p m e d t'),
+        ('8:45 PM CST', 'eight forty five p m c s t'),
+        ('2:08PM PDT', 'two o eight p m p d t'),
+        ('8:00 AM PST', 'eight a m p s t'),
+        ('10:24am EST', 'ten twenty four a m e s t'),
+        ('8 pm AEST', 'eight p m a e s t'),
+        ('3.32pm GMT', 'three thirty two p m g m t'),
+        ('4:38.36', None),
+        ('Thursday, 17-Nov-2016', None),
+        ('14TH OCTOBER 2013', None),
+        ('Fri, 07/22/2011', None),
+        ('23-Mar-1998', None),
+        ('10-April-2014', None),
+        ('6/03/2014', None),
+        ('Sun. 2017-03-16', None),
+        ('12-NOV-1874', 'the twelfth of november eighteen seventy four'),
+        ('¥3 Billion', 'three billion yen'),
+        ('144kb', 'one hundred forty four kilobits'),
+        ('76ers', None),
+        ('49ers', None),
+        ('2min', None),
+        ('19617 12-JUL-1999 MINISTERIO DE JUSTICIA', None),
+        ('(1904) 1 CLR 497', None),
+        ('(1992) 2 SCC 105', None),
+        ('18:30:00 GMT', 'eighteen hours thirty minutes and zero seconds g m t'),
+        ('15:37.39', 'fifteen minutes thirty seven seconds and thirty nine milliseconds'),
     ]
 
     text_normalization = TextNormalization()
 
     for test_case in test_cases:
-        normalized_text = text_normalization.normalize2(test_case)
+        normalized_text = text_normalization.normalize2(test_case[0])
         print(normalized_text)
+        if test_case[1]:
+            assert normalized_text == test_case[1]
         print()
 
-    print(text_normalization.normalize_year('2011'))
-    print(text_normalization.normalize_year('2011', previous='-'))
-    print(text_normalization.normalize_year('2011', following='-'))
+    # print(text_normalization.normalize_year('2011'))
+    # print(text_normalization.normalize_year('2011', previous='-'))
+    # print(text_normalization.normalize_year('2011', following='-'))
 
     # text_normalization.normalize_all()
