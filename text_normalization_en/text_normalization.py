@@ -98,17 +98,17 @@ class TextNormalization(object):
     DATE_DDMMYY = re.compile(r"^[0-3]?[0-9](?:\-|\/|\.)[0-1]?[0-9](?:\-|\/|\.)[0-9]{2}$")
     DATE_MMDD = re.compile(r"^0[0-9](?:\-|\/|\.)[0-3][0-9]$")
     DATE_EN_DMY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[0-9]{1,2}(?:st|nd|rd|th)?[ \-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{2,4} ?(?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)?\.?\,?$")
-    DATE_EN_DM = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
-    DATE_EN_MD = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
-    DATE_EN_MY = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
+    DATE_EN_DM = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
+    DATE_EN_MD = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
+    DATE_EN_MY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
     DATE_EN_MDY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{1,2}(?:st|nd|rd|th)?\,?[ \-][0-9]{2,4} ?(?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)?\.?\,?$")
     YEAR_CALENDAR = re.compile(r"^[0-9]+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?\,?$")
     TIME = re.compile(r"^[0-9]{4}-[0-9]{4}$")
     PROPER_CASE_CONCAT = re.compile(r"^(?:[A-Z][^A-Z\s\.]+){2,}$")
     CAPITAL_LETTER = re.compile(r"^[A-Z]{2,}$")
     MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mi²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|kb|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ms|ft|sq ft|kHz|Hz|in|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|U\.S\.|\"\") ?$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
-    ROMAN = re.compile(r"(^(?=[MDCLXVI]{3,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$|^(?=[mdclxvi]{3,})m{0,4}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$)")
-    CLOCK = re.compile(r"([0-9]{1,2}[\:\.]?[0-9]{0,2} ?(a\.m\.|p\.m\.|A\.M\.|P\.M\.|am|pm|AM|PM) ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$|^[0-9]{1,2}[\:\.] ?[0-9]{2} ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$)")
+    ROMAN = re.compile(r"(^(?=[MDCLXVI]{1,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$|^(?=[mdclxvi]{1,})m{0,4}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$)")
+    CLOCK = re.compile(r"([0-9]{1,2}[\:\.]?[0-9]{0,2} ?(a\.m\.|p\.m\.|A\.M\.|P\.M\.|am|pm|AM|PM) ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC|KST|SST)?$|^[0-9]{1,2}[\:\.] ?[0-9]{2} ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$)")
     SECONDS = re.compile(r"^[0-9]+:[0-9]{2}:[0-9]{2}")
     MILLISECONDS = re.compile(r"^[0-9]+:[0-9]{2}\.[0-9]{2}")
     ELECTRONIC = None
@@ -519,8 +519,10 @@ class TextNormalization(object):
                 suffix = TextNormalization.normalize_year(suffix)
             else:
                 suffix = TextNormalization.normalize_decimal(suffix)
+        elif prefix == 'a' and suffix.startswith('3') and len(suffix) <= 4:
+            suffix = TextNormalization.normalize_year(suffix)
         else:
-            if len(suffix) <= 2:
+            if len(suffix) == 2:
                 suffix = TextNormalization.normalize_decimal(suffix)
             else:
                 d = OrderedDict([
@@ -793,7 +795,7 @@ class TextNormalization(object):
         text = text.replace('PM', ' p m')
         text = text.replace('.', ':')
 
-        for suffix in ['AEST', 'IST', 'UTC', 'GMT', 'EST', 'EDT', 'EST', 'PDT', 'PST', 'CST', 'ET']:
+        for suffix in ['AEST', 'IST', 'UTC', 'GMT', 'EST', 'EDT', 'EST', 'PDT', 'PST', 'CST', 'KST', 'SST', 'ET']:
             if suffix in text:
                 has_suffix = True
                 text = text.replace(suffix, '')
@@ -1110,7 +1112,31 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_roman(text):
-        if len(text) <= 1:
+        # if text == 'I':
+        #     return 'the first'
+        d = {
+            'II': ['the second', 'second', 'two'],
+            'III': ['the third', 'third', 'three'],
+            'IV': ['the fourth', 'fourth', 'four'],
+            'V': ['the fifth', 'fifth', 'five'],
+            'VI': ['the sixth', 'sixth', 'six'],
+            'VII': ['the seventh', 'seventh', 'seven'],
+            'VIII': ['the eighth', 'eighth', 'eight'],
+            'IX': ['the ninth', 'ninth', 'nine'],
+            'X': ['the tenth', 'tenth', 'ten'],
+            'ii': ['the second', 'second', 'two'],
+            'iii': ['the third', 'third', 'three'],
+            'iv': ['the fourth', 'fourth', 'four'],
+            'v': ['the fifth', 'fifth', 'five'],
+            'vi': ['the sixth', 'sixth', 'six'],
+            'vii': ['the seventh', 'seventh', 'seven'],
+            'viii': ['the eighth', 'eighth', 'eight'],
+            'ix': ['the ninth', 'ninth', 'nine'],
+            'x': ['the tenth', 'tenth', 'ten']
+        }
+        if text in d:
+            return d[text][0]
+        elif len(text) <= 1:
             return text
         elif len(text) == 2:
             if text in ['IV', 'VI']:
@@ -1136,8 +1162,11 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_capital_letter(text):
+        return text
+
         if len(text) >= 2:
             if not text in TextNormalization.capitals and not TextNormalization.has_vowel(text):
+            # if not TextNormalization.has_vowel(text):
                 return ' '.join(list(text.lower()))
             else:
                 return text
@@ -1532,6 +1561,8 @@ class TextNormalization(object):
             case = 'DATE_EN_DM'
             print('Case DATE_EN_DM', text)
             text_ = text.strip()
+            if text.strip().startswith('the '):
+                text_ = text[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
             words = text_.split(' ')
@@ -1565,6 +1596,8 @@ class TextNormalization(object):
             case = 'DATE_EN_MD'
             print('Case DATE_EN_MD', text)
             text_ = text.strip()
+            if text.strip().startswith('the '):
+                text_ = text[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
             words = text_.split(' ')
@@ -1598,6 +1631,8 @@ class TextNormalization(object):
             case = 'DATE_EN_MY'
             print('Case DATE_EN_MY', text)
             text_ = text.strip()
+            if text.strip().startswith('the '):
+                text_ = text[4:]
             text_ = text_.replace('.', '')
             text_ = text_.replace(',', '')
             month, year = text_.split(' ')
@@ -1898,6 +1933,7 @@ if __name__ == '__main__':
         ('22 feb 2016', 'the twenty second of february twenty sixteen'),
         ('£295m', 'two hundred ninety five million pounds'),
         ('9 December 2005,', 'the ninth of december two thousand five'),
+        ("the 19th May.", "the nineteenth of may"),
         ('$303.8m', 'three hundred three point eight million dollars'),
         ('$500M', 'five hundred million dollars'),
         ('$120 000', 'one hundred twenty thousand dollars'),
@@ -1914,7 +1950,7 @@ if __name__ == '__main__':
         ("Rs 1,000 crore","one thousand crore rupees"),
         ('LB', None),
         ('/ km²', 'per square kilometers'),
-        ('XK', 'x k'),
+        # ('XK', 'x k'),
         ('C64 ', None),
         ('KB', None),
         ('CRC2142', 'two thousand one hundred forty two costa rican colons'),
@@ -2006,6 +2042,7 @@ if __name__ == '__main__':
         # ("172.22.0.0/15", "o n e s e v e n t w o dot t w e n t y t w o dot o dot o s l a s h f i f t e e n"),
         ('49ers', 'forty niners'),
         ('76ers', 'seventy sixers'),
+        ('II', 'the second'),
         ('XXXV', 'thirty five'),
         ('xxxv', 'x x x v'),
         ("22.9/sq mi", "twenty two point nine per square miles"),
@@ -2064,14 +2101,14 @@ if __name__ == '__main__':
         ("US 3607316","u s three million six hundred seven thousand three hundred sixteen"),
         ("US2008013385","u s two billion eight million thirteen thousand three hundred eighty five"),
         ("U.S. 1828","u s eighteen twenty eight"),
-        ("Interstate 86","interstate eighty six"),
+        # ("Interstate 86","interstate eighty six"),
         ("C01","c o one"),
         ("A330","a three thirty"),
         ("B03003","b o three o o three"),
         ("C00150367","c o o one five o three six seven"),
         ("C3047 ","c three o four seven"),
         ("M0 ","m o"),
-        ("M020","m twenty"),
+        # ("M020","m twenty"),
         ('C107 ', None),
         ('C613', None),
         ("I-5","i five"),
@@ -2087,6 +2124,10 @@ if __name__ == '__main__':
         ("1:00pm","one p m"),
         ("2 pm","two p m"),
         # ("00:01","zero o one"),
+        ("NCDE", "NCDE"),
+        ("NATYRORE", "NATYRORE"),
+        ("14th","fourteenth"),
+        ("ORDINAL","1ST","first"),
         ("0.8.7.0","o dot e i g h t dot s e v e n dot o"),
         ("16.14.12.10","s i x t e e n dot f o u r t e e n dot t w e l v e dot t e n"),
         ("10.47.16.5", None)
