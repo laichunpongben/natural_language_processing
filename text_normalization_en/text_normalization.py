@@ -12,7 +12,6 @@ import roman
 # 3691,2,"2008-18-03" month 18
 # 1000-300 BCE
 # A&M
-# 743712,10,"ELECTRONIC","#Grading","hash tag grading"
 # Hockey-Reference.com
 # 24-
 # HHMU
@@ -75,21 +74,22 @@ import roman
 # "36275_1","110 million m³","one hundred ten million cubic meters","110 million m³","Private"
 # "30522_1","60 US ","sixty US","sixty","Private"
 # "18139_6","£77,039.89","seventy seven thousand thirty nine point eight nine pounds","seventy seven thousand thirty nine pounds and eighty nine pence","Private"
-# "8165_5","485 U.S. ","four hundred eighty five U.S.","four hundred eighty five","Private"
+# nitrogen monoxide
 
 class TextNormalization(object):
     YEAR = re.compile(r"^[1-9][0-9]{3} ?$")
     LEADING_ZERO = re.compile(r"^0(?=[0-9])(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)$")
     DECIMAL_COMMA_OPTIONAL = re.compile(r"^\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?\,? ?$")
     ISBN = re.compile(r"^[0-9][\-0-9]{11,}[0-9]$")
-    TELEPHONE = re.compile(r"^[0-9 \-\(\)]+[0-9]$")
+    TELEPHONE = re.compile(r"(?!^\-+$)(^[0-9 \-\(\)].*[\-\(\)]|^[0-9 \-\(\)]{2,}$|^[0-9]+[ \-\(\)].*?[ \-\(\)][0-9]+$)")
+
     TELEPHONE_COMMON = re.compile(r"^(911|999|9-1-1|9-9-9)$")
     IPv4 = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/?[0-9]{0,2}$")
     DECIMAL = re.compile(r"^[0-9]*\.?[0-9]+$")
     CURRENCY = re.compile(r"^\-?(\$|£|€|¥|USD|US\$|SEK|PKR|XCD|NOK|EGP|DKK|ATS|INR|GMD|GBP|CHF|AED|SAR|THB|UAH|PHP|PLN|ILS|ZAR|HUF|RSD|CZK|VAL|CRC|BEF|CYP|SCR|ARS|SHP|BDT|LTL|PGK|SBD|EUR|BMD|BWP|IDR|CVE|MDL|NAD|BTN|NT\$|CA\$|HK\$|AU\$|NZ\$|A\$|S\$|R\$|RS\.|RS|Rs\.|Rs) ?\-?(?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?")
     PERCENT = re.compile(r"^\-?(?=(?:\.|[0-9]))[0-9]+(?:\.[0-9]+)? ?(?:%| percent)$")
-    DATE_YYYYMMDD = re.compile(r"^[1-2][0-9]{3}(?:\-|\/|\.)(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])$")
-    DATE_MMDDYYYY = re.compile(r"^(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?[1-2][0-9]{3}$")
+    DATE_YYYYMMDD = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[1-2][0-9]{3}(?:\-|\/|\.)(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])$")
+    DATE_MMDDYYYY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(0[1-9]|1[012])(?:\-|\/|\.)?(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?[1-2][0-9]{3}$")
     DATE_DDMMYYYY = re.compile(r"^(0[1-9]|[12][0-9]|3[01])(?:\-|\/|\.)?(0[1-9]|1[012])(?:\-|\/|\.)?[1-2][0-9]{3}$")
     DATE_YYYYMD = re.compile(r"^[1-2][0-9]{3}(?:\-|\/|\.)([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12][0-9]|3[01])$")
     DATE_MDYYYY = re.compile(r"^([1-9]|1[012])(?:\-|\/|\.)([1-9]|[12][0-9]|3[01])(?:\-|\/|\.)[1-2][0-9]{3}$")
@@ -97,25 +97,29 @@ class TextNormalization(object):
     DATE_MMDDYY = re.compile(r"^[0-1]?[0-9](?:\-|\/|\.)[0-3]?[0-9](?:\-|\/|\.)[0-9]{2}$")
     DATE_DDMMYY = re.compile(r"^[0-3]?[0-9](?:\-|\/|\.)[0-1]?[0-9](?:\-|\/|\.)[0-9]{2}$")
     DATE_MMDD = re.compile(r"^0[0-9](?:\-|\/|\.)[0-3][0-9]$")
-    DATE_EN_DMY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,? ?[0-9]{1,2}(?:st|nd|rd|th)?[ \-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{2,4}\,?$")
-    DATE_EN_DM = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
-    DATE_EN_MD = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
-    DATE_EN_MY = re.compile(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
-    DATE_EN_MDY = re.compile(r"^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?(\, | )?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{1,2}(?:st|nd|rd|th)?\,?[ \-][0-9]{2,4}\,?$")
+    DATE_EN_DMY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[0-9]{1,2}(?:st|nd|rd|th)?[ \-](January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{2,4} ?(?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)?\.?\,?$")
+    DATE_EN_DM = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?[0-9]{1,2}(?:st|nd|rd|th)? (January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? ?$")
+    DATE_EN_MD = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{1,2}(?:st|nd|rd|th)? ?$")
+    DATE_EN_MY = re.compile(r"(?i)^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]? [0-9]{4}$")
+    DATE_EN_MDY = re.compile(r"(?i)^(the )?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\,?\.? ?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec|JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER|JAN|FEB|MAR|APR|JUN|JUL|AUG|SEPT|SEP|OCT|NOV|DEC)[\.\,]?[ \-][0-9]{1,2}(?:st|nd|rd|th)?\,?[ \-][0-9]{2,4} ?(?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)?\.?\,?$")
     YEAR_CALENDAR = re.compile(r"^[0-9]+ (?:BCE|CE|BC|AD|A\.D\.|B\.C\.|B\.C\.E\.|C\.E\.)\.?\,?$")
     TIME = re.compile(r"^[0-9]{4}-[0-9]{4}$")
     PROPER_CASE_CONCAT = re.compile(r"^(?:[A-Z][^A-Z\s\.]+){2,}$")
     CAPITAL_LETTER = re.compile(r"^[A-Z]{2,}$")
-    MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|kb|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ft|sq ft|kHz|Hz|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|\"\")$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
-    ROMAN = re.compile(r"^(?=[MDCLXVI]{3,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$")
-    CLOCK = re.compile(r"([0-9]{1,2}[\:\.]?[0-9]{0,2} ?(a\.m\.|p\.m\.|am|pm|AM|PM) ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$|^[0-9]{1,2}[\:\.] ?[0-9]{2} ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$)")
+    MEASURE = re.compile(r"(^\-?((?=(?:\.|[0-9]))(?:[0-9]*|[0-9]{1,3}(?:(?: |,)[0-9]{3})*)(?:\.[0-9]+)?|.*\/|.*\s)(?:(milli)?litres|(milli|centi|kilo)?metres|m2|m²|m3|Km|km|km2|km²|km3|km³|m³|km²|mm²|mi²|mg\/Kg|mSv\/yr|km\/h|km\/s|m\/s|ft\/s|kg\/m3|g\/cm3|mg\/kg|mg\/L|km\/hr|μg\/ml|kcal\/mol|kJ\/mol|kcal\/g|kJ\/g|kJ\/m³|m³\/s|kg\/ha|kWh\/m3|kWh\/m|kg\/m|g\/km|mol|mAh|KiB|GPa|kPa|kJ|kg|Kg|kV|kb|mV|kW|lbs|lb|sq mi|mi2|mi|MB|m|mg|mL|ml|ha|hp|cc|cm|nm|mm|ms|ft|sq ft|kHz|Hz|in|Gy|GB|AU|MW|bbl|mph|rpm|hrs|MHz|GHz|MPa|kJ|KB|kN|yd|oz|USD|EUR|U\.S\.|\"\") ?$|^\-?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})*)(?:\.[0-9]+)?(?:\/| )?[gmV]$)")
+    ROMAN = re.compile(r"(^(?=[MDCLXVI]{3,})M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})$|^(?=[mdclxvi]{3,})m{0,4}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$)")
+    CLOCK = re.compile(r"([0-9]{1,2}[\:\.]?[0-9]{0,2} ?(a\.m\.|p\.m\.|A\.M\.|P\.M\.|am|pm|AM|PM) ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$|^[0-9]{1,2}[\:\.] ?[0-9]{2} ?(GMT|IST|ET|EST|EDT|PDT|PST|CST|AEST|UTC)?$)")
+    SECONDS = re.compile(r"^[0-9]+:[0-9]{2}:[0-9]{2}")
+    MILLISECONDS = re.compile(r"^[0-9]+:[0-9]{2}\.[0-9]{2}")
     ELECTRONIC = None
-    FRACTION = re.compile(r"(^[0-9]+ ?)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒] ?$|( 1\/2| 1\/3| 2\/3| 1\/4| 3\/4| 1\/5| 2\/5| 3\/5| 4\/5| 1\/6| 5\/6| 1\/7| 1\/8| 3\/8| 5\/8| 7\/8| 1\/9| 1\/10) ?$)")
-    ALPHADIGIT = re.compile(r"^[A-Z][0-9]+ ?$")
+    FRACTION = re.compile(r"(^[0-9]+ ?)?([½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅐⅛⅜⅝⅞⅑⅒] ?$|( 1\/2| 1\/3| 2\/3| 1\/4| 3\/4| 1\/5| 2\/5| 3\/5| 4\/5| 1\/6| 5\/6| 1\/7| 1\/8| 3\/8| 5\/8| 7\/8| 1\/9| 1\/10) ?$|(?<!\/)\-?[0-9]+ ?\/ ?[0-9]+(?!\/))\b")
+    ALPHADIGIT = re.compile(r"(^[A-Z]+[ \-]?[0-9]+ ?$|^U\.S\. ?[0-9]+ ?$)")
     KATAKANA = None
     KANJI = None  # 69155, 67022
     HASHTAG = re.compile(r"^#.+$")
     HYPHEN = re.compile(r"^[A-Za-z]+\-$")
+    CAPITAL_DOT = re.compile(r"^([A-Z]\. ?)+$")
+    REPLACE = re.compile(r"^(49ers|76ers)$")
     URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|\.eu|\.is|\.no|\.ph|\.gr|\.se|\.jp|\.xyz|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
 
     digit_transcripter = inflect.engine()
@@ -231,7 +235,7 @@ class TextNormalization(object):
                 return d[text]
             else:
                 if len(text) > 2:
-                    # if previous in ['-', '/'] or following in ['-', '/']:
+                    # if previous in ['/'] or following in ['/']:
                     if False:
                         text_ = TextNormalization.digit_transcripter.number_to_words(text)
                         if text == '00':
@@ -394,79 +398,83 @@ class TextNormalization(object):
     @staticmethod
     def normalize_telephone(text, language='en_US'):
         text_ = text.lower().strip()
-        text_ = text_.replace('(', '')
-        text_ = text_.replace(')', '-')
-        text_ = text_.replace(' ', '-')
-        text_ = re.sub(r"\-+", r"-", text_)
-        text_ = " ".join(text_)
+        if text_.endswith('-'):
+            text_ = text_[:-1]
+        text_ = text_.replace('(', '--')
+        text_ = text_.replace(')', '--')
+        text_ = text_.replace(' ', '--')
+        text_ = text_.replace('-', '--')
 
         if language == 'en_US':
             d = OrderedDict([
-                ('- 1 2 0 0 -', 'sil twelve hundred sil'),
-                ('- 1 1 0 0 -', 'sil eleven hundred sil'),
-                ('- 1 0 0 0 -', 'sil one thousand sil'),
-                ('- 0 9 0 0 -', 'sil o nine hundred sil'),
-                ('- 0 8 0 0 -', 'sil o eight hundred sil'),
-                ('- 0 7 0 0 -', 'sil o seven hundred sil'),
-                ('- 0 6 0 0 -', 'sil o six hundred sil'),
-                ('- 0 5 0 0 -', 'sil o five hundred sil'),
-                ('- 0 4 0 0 -', 'sil o four hundred sil'),
-                ('- 0 3 0 0 -', 'sil o three hundred sil'),
-                ('- 0 2 0 0 -', 'sil o two hundred sil'),
-                ('- 0 1 0 0 -', 'sil o one hundred sil'),
-                ('- 9 0 0 -', 'sil nine hundred sil'),
-                ('- 8 0 0 -', 'sil eight hundred sil'),
-                ('- 7 0 0 -', 'sil seven hundred sil'),
-                ('- 6 0 0 -', 'sil six hundred sil'),
-                ('- 5 0 0 -', 'sil five hundred sil'),
-                ('- 4 0 0 -', 'sil four hundred sil'),
-                ('- 3 0 0 -', 'sil three hundred sil'),
-                ('- 2 0 0 -', 'sil two hundred sil'),
-                ('- 1 0 0 -', 'sil one hundred sil'),
-                ('2 3 0 0', 'two three o o'),
-                ('2 2 0 0', 'two two o o'),
-                ('2 1 0 0', 'two one o o'),
-                ('2 0 0 0', 'two thousand'),
-                ('1 9 0 0', 'nineteen hundred'),
-                ('1 8 0 0', 'eighteen hundred'),
-                ('1 7 0 0', 'seventeen hundred'),
-                ('1 6 0 0', 'sixteen hundred'),
-                ('1 5 0 0', 'fifteen hundred'),
-                ('1 4 0 0', 'fourteen hundred'),
-                ('1 3 0 0', 'thirteen hundred'),
-                ('1 2 0 0', 'twelve hundred'),
-                ('1 1 0 0', 'eleven hundred'),
-                ('1 0 0 0', 'one thousand'),
-                ('0 9 0 0', 'o nine hundred'),
-                ('0 8 0 0', 'o eight hundred'),
-                ('0 7 0 0', 'o seven hundred'),
-                ('0 6 0 0', 'o six hundred'),
-                ('0 5 0 0', 'o five hundred'),
-                ('0 4 0 0', 'o four hundred'),
-                ('0 3 0 0', 'o three hundred'),
-                ('0 2 0 0', 'o two hundred'),
-                ('0 1 0 0', 'o one hundred'),
-                # ('9 0 0', 'nine hundred'),
-                # ('8 0 0', 'eight hundred'),
-                # ('7 0 0', 'seven hundred'),
-                # ('6 0 0', 'six hundred'),
-                # ('5 0 0', 'five hundred'),
-                # ('4 0 0', 'four hundred'),
-                # ('3 0 0', 'three hundred'),
-                # ('2 0 0', 'two hundred'),
-                # ('1 0 0', 'one hundred'),
-                ('1', 'one'),
-                ('2', 'two'),
-                ('3', 'three'),
-                ('4', 'four'),
-                ('5', 'five'),
-                ('6', 'six'),
-                ('7', 'seven'),
-                ('8', 'eight'),
-                ('9', 'nine'),
-                ('0', 'o'),
-                ('.', 'dot'),
-                ('-', 'sil'),
+                ('-1200-', ' sil twelve hundred sil '),
+                ('-1100-', ' sil eleven hundred sil '),
+                ('-1000-', ' sil one thousand sil '),
+                ('-0900-', ' sil o nine hundred sil '),
+                ('-0800-', ' sil o eight hundred sil '),
+                ('-0700-', ' sil o seven hundred sil '),
+                ('-0600-', ' sil o six hundred sil '),
+                ('-0500-', ' sil o five hundred sil '),
+                ('-0400-', ' sil o four hundred sil '),
+                ('-0300-', ' sil o three hundred sil '),
+                ('-0200-', ' sil o two hundred sil '),
+                ('-0100-', ' sil o one hundred sil '),
+                ('-900-', ' sil nine hundred sil '),
+                ('-800-', ' sil eight hundred sil '),
+                ('-700-', ' sil seven hundred sil '),
+                ('-600-', ' sil six hundred sil '),
+                ('-500-', ' sil five hundred sil '),
+                ('-400-', ' sil four hundred sil '),
+                ('-300-', ' sil three hundred sil '),
+                ('-200-', ' sil two hundred sil '),
+                ('-100-', ' sil one hundred sil '),
+                ('2300', ' two three o o '),
+                ('2200', ' two two o o '),
+                ('2100', ' two one o o '),
+                ('2000', ' two thousand '),
+                ('1900', ' nineteen hundred '),
+                ('1800', ' eighteen hundred '),
+                ('1700', ' seventeen hundred '),
+                ('1600', ' sixteen hundred '),
+                ('1500', ' fifteen hundred '),
+                ('1400', ' fourteen hundred '),
+                ('1300', ' thirteen hundred '),
+                ('1200', ' twelve hundred '),
+                ('1100', ' eleven hundred '),
+                ('1000', ' one thousand '),
+                ('0900', ' o nine hundred '),
+                ('0800', ' o eight hundred '),
+                ('0700', ' o seven hundred '),
+                ('0600', ' o six hundred '),
+                ('0500', ' o five hundred '),
+                ('0400', ' o four hundred '),
+                ('0300', ' o three hundred '),
+                ('0200', ' o two hundred '),
+                ('0100', ' o one hundred '),
+                ('900-', ' nine hundred sil '),
+                ('800-', ' eight hundred sil '),
+                ('700-', ' seven hundred sil '),
+                ('600-', ' six hundred sil '),
+                ('500-', ' five hundred sil '),
+                ('400-', ' four hundred sil '),
+                ('300-', ' three hundred sil '),
+                ('200-', ' two hundred sil '),
+                ('100-', ' one hundred sil '),
+                ('1', ' one '),
+                ('2', ' two '),
+                ('3', ' three '),
+                ('4', ' four '),
+                ('5', ' five '),
+                ('6', ' six '),
+                ('7', ' seven '),
+                ('8', ' eight '),
+                ('9', ' nine '),
+                ('0', ' o '),
+                ('.', ' dot '),
+                ('-', ' sil '),
+                ('isbn', ' i s b n '),
+                ('oclc', ' o c l c '),
+                ('bc', ' b c '),
             ])
         else:
             d = OrderedDict([
@@ -485,12 +493,60 @@ class TextNormalization(object):
         for k, v in d.items():
             text_ = text_.replace(k, v)
 
+        text_ = re.sub(r" +", r" ", text_).strip()
+        text_ = re.sub(r"(sil )+sil", r"sil", text_)
+        if text_.startswith('sil '):
+            text_ = text_[4:]
+
         return text_
 
     @staticmethod
-    def normalize_leading_zero(text):
-        if len(text) == text.count('0'):
-            return 'zero'
+    def normalize_alphadigit(text):
+        text = text.lower().strip()
+        for i, c in enumerate(text):
+            if c.isdigit():
+                break
+        prefix, suffix = text[:i], text[i:]
+
+        prefix = prefix.strip()
+        prefix = prefix.replace('-', '')
+        prefix = prefix.replace('.', '')
+        prefix = ' '.join(list(prefix))
+
+        print(prefix)
+        if prefix == 'u s':
+            if int(suffix) <= 2099:
+                suffix = TextNormalization.normalize_year(suffix)
+            else:
+                suffix = TextNormalization.normalize_decimal(suffix)
+        else:
+            if len(suffix) <= 2:
+                suffix = TextNormalization.normalize_decimal(suffix)
+            else:
+                d = OrderedDict([
+                    ('1', ' one '),
+                    ('2', ' two '),
+                    ('3', ' three '),
+                    ('4', ' four '),
+                    ('5', ' five '),
+                    ('6', ' six '),
+                    ('7', ' seven '),
+                    ('8', ' eight '),
+                    ('9', ' nine '),
+                    ('0', ' o '),
+                ])
+                for k, v in d.items():
+                    if k in suffix:
+                        suffix = suffix.replace(k, v)
+
+        text = prefix + ' ' + suffix
+        return text
+
+    @staticmethod
+    def normalize_leading_zero(text, previous=None):
+        if previous:
+            if len(text) == text.count('0') and previous.isdigit():
+                return 'zero'
 
         d = OrderedDict([
             ('1', 'one'),
@@ -586,6 +642,7 @@ class TextNormalization(object):
         d = OrderedDict([
             ('USD', ['united states dollars', 'united states dollar']),
             ('EUR', ['euros', 'euro']),
+            ('U.S.', ['', '']),
             ('kcal/mol', ['kilo calories per mole', 'kilo calorie per mole']),
             ('kJ/mol', ['kilo joules per mole', 'kilo joule per mole']),
             ('mSv/yr', ['millisieverts per year', 'millisievert per year']),
@@ -626,6 +683,7 @@ class TextNormalization(object):
             ('km³', ['cubic kilometers', 'cubic kilometer']),
             ('km²', ['square kilometers', 'square kilometer']),
             ('mm²', ['square millimeters', 'square millimeter']),
+            ('mi²', ['square miles', 'square mile']),
             ('Km', ['kilometers', 'kilometer']),
             ('km', ['kilometers', 'kilometer']),
             ('Kg', ['kilograms', 'kilogram']),
@@ -633,6 +691,7 @@ class TextNormalization(object):
             ('kJ', ['kilo joules', 'kilo joule']),
             ('kV', ['kilo volts', 'kilo volt']),
             ('mV', ['milli volts', 'milli volt']),
+            ('ms', ['milliseconds', 'millisecond']),
             ('kW', ['kilowatts', 'kilowatt']),
             ('KB', ['kilobytes', 'kilobyte']),
             ('lbs', ['pounds', 'pound']),
@@ -667,6 +726,7 @@ class TextNormalization(object):
             ('MW', ['megawatts', 'megawatt']),
             ('MB', ['megabytes', 'megabyte']),
             ('kb', ['kilobits', 'kilobit']),
+            ('in', ['inches', 'inch']),
             ('a.m.', ['a m', 'a m']),
             ('p.m.', ['p m', 'p m']),
             ('am', ['a m', 'a m']),
@@ -679,7 +739,7 @@ class TextNormalization(object):
         text_ = text
         normalized_measure = None
         for k, v in d.items():
-            if text_.endswith(k):
+            if text_.endswith(k) or text_.endswith(k + ' '):
                 measure, normalized_measure = k, v
                 text_ = text_.replace(k, '')
                 break
@@ -716,6 +776,8 @@ class TextNormalization(object):
             normalized_text += ' '
             normalized_text += normalized_measure
 
+        normalized_text = normalized_text.replace('/', 'per')
+
         return normalized_text
 
     @staticmethod
@@ -723,6 +785,8 @@ class TextNormalization(object):
         has_suffix = False
         text = text.replace('a.m.', ' a m')
         text = text.replace('p.m.', ' p m')
+        text = text.replace('A.M.', ' a m')
+        text = text.replace('P.M.', ' p m')
         text = text.replace('am', ' a m')
         text = text.replace('pm', ' p m')
         text = text.replace('AM', ' a m')
@@ -751,52 +815,154 @@ class TextNormalization(object):
         return text
 
     @staticmethod
+    def normalize_seconds(text):
+        suffix = None
+        if ' ' in text:
+            text, suffix = text.split(' ')
+            suffix = ' '.join(list(suffix.lower()))
+
+        hour, minute, second = text.split(':')
+        hour = TextNormalization.normalize_decimal(hour)
+        minute = TextNormalization.normalize_decimal(minute)
+        second = TextNormalization.normalize_decimal(second)
+
+        text = '{0} hours {1} minutes and {2} seconds'.format(hour, minute, second)
+        if suffix:
+            text += ' ' + suffix
+
+        return text
+
+    @staticmethod
+    def normalize_milliseconds(text):
+        suffix = None
+        if ' ' in text:
+            text, suffix = text.split(' ')
+            suffix = ' '.join(list(suffix.lower()))
+
+        minute_second, millisecond = text.split('.')
+        minute, second = minute_second.split(':')
+        minute = TextNormalization.normalize_decimal(minute)
+        second = TextNormalization.normalize_decimal(second)
+        millisecond = TextNormalization.normalize_decimal(millisecond)
+
+        text = '{0} minutes {1} seconds and {2} milliseconds'.format(minute, second, millisecond)
+        if suffix:
+            text += ' ' + suffix
+
+        return text
+
+    @staticmethod
     def normalize_fraction(text):
-        d = {
-            '½': ' and a half',
-            '⅓': ' and a third',
-            '⅔': ' and two thirds',
-            '¼': ' and a quarter',
-            '¾': ' and three quarters',
-            '⅕': ' and a fifth',
-            '⅖': ' and two fifths',
-            '⅗': ' and three fifths',
-            '⅘': ' and four fifths',
-            '⅙': ' and a sixth',
-            '⅚': ' and five sixths',
-            '⅐': ' and a seventh',
-            '⅛': ' and an eighth',
-            '⅜': ' and three eighths',
-            '⅝': ' and five eighths',
-            '⅞': ' and seven eighths',
-            '⅑': ' and a nineth',
-            '⅒': ' and a tenth',
-            '1/2': ' and a half',
-            '1/3': ' and a third',
-            '2/3': ' and two thirds',
-            '1/4': ' and a quarter',
-            '3/4': ' and three quarters',
-            '1/5': ' and a fifth',
-            '2/5': ' and two fifths',
-            '3/5': ' and three fifths',
-            '4/5': ' and four fifths',
-            '1/6': ' and a sixth',
-            '5/6': ' and five sixths',
-            '1/7': ' and a seventh',
-            '1/8': ' and an eighth',
-            '3/8': ' and three eighths',
-            '5/8': ' and five eighths',
-            '7/8': ' and seven eighths',
-            '1/9': ' and a nineth',
-            '1/10': ' and a tenth',
-        }
-        for k, v in d.items():
-            if k in text:
-                text = text.replace(k, d[k])
-        if text.startswith(' and a '):
-            text = text.replace(' and a', 'one')
-        elif text.startswith(' and '):
-            text = text.replace(' and ', '')
+        text = text.replace(' / ', '/')
+        text = text.replace('/ ', '/')
+        text = text.replace(' /', '/')
+
+        whole, fraction = '', ''
+        numerator, denominator = '', ''
+
+        if ' ' in text:
+            whole, fraction = text.split(' ')
+        else:
+            fraction = text
+
+        if '/' in fraction:
+            numerator, denominator = fraction.split('/')
+            numerator = TextNormalization.normalize_decimal(numerator)
+            denominator = TextNormalization.normalize_decimal(denominator)
+
+            if denominator == 'two':
+                denominator = 'halves'
+                if numerator in ['one', 'minus one']:
+                    denominator = 'half'
+            elif denominator == 'four':
+                denominator = 'quarters'
+            elif denominator.endswith('y'):
+                denominator = denominator[:-1] + 'ieths'
+            elif denominator.endswith('ve'):
+                denominator = denominator[:-2] + 'fths'
+            elif denominator.endswith('one'):
+                denominator = denominator[:-3] + 'firsts'
+            elif denominator.endswith('two'):
+                denominator = denominator[:-3] + 'seconds'
+            elif denominator.endswith('three'):
+                denominator = denominator[:-5] + 'thirds'
+            elif denominator.endswith('nine'):
+                denominator = denominator[:-4] + 'ninths'
+            elif denominator.endswith('t'):
+                denominator += 'hs'
+            else:
+                denominator += 'ths'
+            # elif denominator.endswith('')
+
+            if numerator == 'one':
+                numerator = 'a'
+                if denominator.endswith('s'):
+                    denominator = denominator[:-1]
+
+            fraction = numerator + ' ' + denominator
+            if fraction == 'a first':
+                fraction = 'one over one'
+
+        else:
+            d = {
+                '½': ' and a half',
+                '⅓': ' and a third',
+                '⅔': ' and two thirds',
+                '¼': ' and a quarter',
+                '¾': ' and three quarters',
+                '⅕': ' and a fifth',
+                '⅖': ' and two fifths',
+                '⅗': ' and three fifths',
+                '⅘': ' and four fifths',
+                '⅙': ' and a sixth',
+                '⅚': ' and five sixths',
+                '⅐': ' and a seventh',
+                '⅛': ' and an eighth',
+                '⅜': ' and three eighths',
+                '⅝': ' and five eighths',
+                '⅞': ' and seven eighths',
+                '⅑': ' and a nineth',
+                '⅒': ' and a tenth',
+                # '1/2': ' and a half',
+                # '1/3': ' and a third',
+                # '2/3': ' and two thirds',
+                # '1/4': ' and a quarter',
+                # '3/4': ' and three quarters',
+                # '1/5': ' and a fifth',
+                # '2/5': ' and two fifths',
+                # '3/5': ' and three fifths',
+                # '4/5': ' and four fifths',
+                # '1/6': ' and a sixth',
+                # '5/6': ' and five sixths',
+                # '1/7': ' and a seventh',
+                # '1/8': ' and an eighth',
+                # '3/8': ' and three eighths',
+                # '5/8': ' and five eighths',
+                # '7/8': ' and seven eighths',
+                # '1/9': ' and a nineth',
+                # '1/10': ' and a tenth',
+            }
+            for k, v in d.items():
+                if k in fraction:
+                    fraction = fraction.replace(k, d[k])
+
+        if whole:
+            text = whole + ' and ' + fraction
+        else:
+            text = fraction
+        text = text.strip()
+
+        if text.startswith('and a '):
+            text = text.replace('and a', 'one')
+        elif text.startswith('and '):
+            text = text.replace('and ', '')
+
+        if text.startswith('a '):
+            text = 'one' + text[1:]
+
+        text = re.sub(r" +", r" ", text)
+        text = text.replace('and and', 'and')
+
         return text
 
     @staticmethod
@@ -896,6 +1062,20 @@ class TextNormalization(object):
                         text = text[:-1] + ' billion'
                 text = text + ' ' + v
                 break
+
+        words = text.split(' ')
+        for index, word in enumerate(words):
+            try:
+                if word == 'cr':
+                    words[index] = 'crore'
+
+                f = float(word)
+                words[index] = TextNormalization.normalize_decimal(word)
+            except ValueError:
+                pass
+
+        text = ' '.join(words)
+
         return text.lower()
 
     @staticmethod
@@ -903,6 +1083,11 @@ class TextNormalization(object):
         text_ = text.strip()
         if text_.endswith(','):
             text_ = text_[:-1]
+
+        zero_suffix = re.compile(r"[0-9]+\.0+$")
+        if zero_suffix.match(text):
+            text_ = re.sub(r"\.0+", r"", text_)
+
         text_ = TextNormalization.digit_transcripter.number_to_words(text_)
         text_ = text_.replace('-', ' ')
         text_ = text_.replace(',', '')
@@ -910,7 +1095,8 @@ class TextNormalization(object):
 
         if text.isdigit():
             if all(c == '0' for c in text) and len(text) > 1:
-                text_ = ' '.join('o' * len(text))
+                # text_ = ' '.join('o' * len(text))
+                text_ = 'zero'
             else:
                 len_leading_zero = len(text) - len(str(int(text)))
                 text_ = 'o ' * len_leading_zero + text_
@@ -934,10 +1120,21 @@ class TextNormalization(object):
             else:
                 return text
         else:
-            int_ = str(roman.fromRoman(text))
-            text_ = TextNormalization.normalize_decimal(int_)
-            return text_
+            if text.isupper():
+                int_ = str(roman.fromRoman(text))
+                text_ = TextNormalization.normalize_decimal(int_)
+                return text_
+            else:
+                if text in ['mix']:
+                    return text
+                else:
+                    return ' '.join(list(text))
 
+    @staticmethod
+    def normalize_capital_dot(text):
+        return text.lower().replace('.', ' ').strip()
+
+    @staticmethod
     def normalize_capital_letter(text):
         if len(text) >= 2:
             if not text in TextNormalization.capitals and not TextNormalization.has_vowel(text):
@@ -1005,75 +1202,87 @@ class TextNormalization(object):
         df_result.to_csv(self.result_path, index=False, quoting=csv.QUOTE_NONNUMERIC)
 
     def normalize2(self, text, language='en_US', previous=None, following=None):
-        normalized_text = self.normalize(text, language, previous=previous, following=following)
+        normalized_text, case = self.normalize(text, language, previous=previous, following=following)
         words = [x for x in normalized_text.split(' ') if x]
         for index, word in enumerate(words):
             if self.DECIMAL_COMMA_OPTIONAL.match(word):
                 words[index] = TextNormalization.normalize_decimal(word)
 
-        return ' '.join(words)
+        return ' '.join(words), case
 
     def normalize(self, text, language='en_US', previous=None, following=None):
+        normalized_text = ''
+        case = ''
         # if text in self.d_replace.keys():
         #     print('Case REPLACE', text)
-        #     return self.d_replace[text]
+        #     normalized_text = self.d_replace[text]
         # elif text.isupper() and text.isalpha() and len(text) > 1 and self.has_vowel(text):
         #     print('Case UPPER_WORD', text)
-        #     return text
+        #     normalized_text = text
         # elif text.isupper() and text.isalpha() and len(text) > 1 and not self.has_vowel(text):
         #     print('Case UPPER_NON_WORD', text)
-        #     return " ".join(text.lower())
+        #     normalized_text = " ".join(text.lower())
         # elif text[:-2].isupper() and text.isalpha() and text[-2:] == "'s" and not self.has_vowel(text):
         #     print('Case UPPER_S_0', text)
-        #     return " ".join(text[:-2].lower()) + "'s"
+        #     normalized_text = " ".join(text[:-2].lower()) + "'s"
         # elif text[:-1].isupper() and text.isalpha() and text[-1:] == "s" and len(text) > 2 and not self.has_vowel(text):  # SEALs
         #     print('Case UPPER_S_1', text)
-        #     return " ".join(text[:-1].lower()) + "'s"
+        #     normalized_text = " ".join(text[:-1].lower()) + "'s"
 
         if isinstance(text, float) and pd.isnull(text):
-            return ""
-        if text in ['-'] and (previous and following):
+            case = 'NULL'
+            normalized_text = ""
+        elif text in ['-'] and (previous and following):
+            case = 'TO_1'
             if (previous.isdigit() and following.isdigit()):
-                return 'to'
+                normalized_text = 'to'
             else:
-                return text
+                normalized_text = text
         elif text in ['~', ':'] and previous and following:
+            case = 'TO_2'
             if (previous.isdigit() and following.isdigit()):
-                return 'to'
+                normalized_text = 'to'
             else:
-                return text
+                normalized_text = text
         elif text in ['x', 'x '] and previous and following:
+            case = 'BY'
             if (TextNormalization.has_digit(previous) and TextNormalization.has_digit(following)):
-                return 'by'
+                normalized_text = 'by'
             else:
-                return text
+                normalized_text = text
         elif text == 'min' and previous:
+            case = 'MIN'
             if previous.isdigit():
-                return 'minute'
+                normalized_text = 'minute'
             else:
-                return text
+                normalized_text = text
         elif text in ['no', 'No', 'NO'] and following:
+            case = 'NUM'
             if following.isdigit():
-                return 'number'
+                normalized_text = 'number'
             else:
-                return text
+                normalized_text = text
         elif text in ['#'] and following:
+            case = 'HASH'
             if not following.isdigit():
-                return 'hash'
+                normalized_text = 'hash'
             else:
-                return 'number'
+                normalized_text = 'number'
         elif self.YEAR_CALENDAR.match(text):
+            case = 'YEAR_CALENDAR'
             print('Case YEAR_CALENDAR', text)
-            return TextNormalization.normalize_year_calendar(text, previous=previous, following=following)
+            normalized_text = TextNormalization.normalize_year_calendar(text, previous=previous, following=following)
         elif self.YEAR.match(text) and 1001 <= int(text.strip()) <= 2099:
+            case = 'YEAR'
             print('Case YEAR', text)
             if text.isdigit():
-                return TextNormalization.normalize_year(text, previous=previous, following=following)
+                normalized_text = TextNormalization.normalize_year(text, previous=previous, following=following)
             elif text.endswith(' '):  # TODO: handle xxxties
-                return TextNormalization.normalize_year(text[:-1], previous=previous, following=following)
+                normalized_text = TextNormalization.normalize_year(text[:-1], previous=previous, following=following)
             else:
-                return text
+                normalized_text = text
         elif self.DATE_YYYYMMDD.match(text) or self.DATE_YYYYMD.match(text):
+            case = 'DATE_YYYYMMDD'
             print('Case DATE_YYYYMMDD', text)
             if '-' in text:
                 delimiter = '-'
@@ -1084,6 +1293,18 @@ class TextNormalization(object):
             else:
                 delimiter = None
             text_ = text.strip()
+
+            weekday = None
+            if not text_[0].isdigit():
+                for i, c in enumerate(text_):
+                    if c.isdigit():
+                        break
+                weekday, text_ = text_[:i], text_[i:]
+                weekday = weekday.lower().strip()
+                weekday = weekday.replace(',', '')
+                weekday = weekday.replace('.', '')
+                if len(weekday) <= 3:
+                    weekday = TextNormalization.normalize_weekday(weekday)
 
             if delimiter:
                 year, month, day = text_.split(delimiter)
@@ -1097,14 +1318,17 @@ class TextNormalization(object):
                     text_ = 'the {0} of {1} {2}'.format(normalized_day, normalized_month, normalized_year)
                 else:
                     text_ = '{0}年{1}月{2}日'.format(normalized_year, normalized_month, normalized_day)
-                return text_
+                if weekday:
+                    text_ = weekday + ' ' + text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_MMDDYYYY.match(text) or self.DATE_MDYYYY.match(text) or self.DATE_MMDDYY.match(text):
+            case = 'DATE_MMDDYYYY'
             print('Case DATE_MMDDYYYY', text)
             if '-' in text:
                 delimiter = '-'
@@ -1115,6 +1339,18 @@ class TextNormalization(object):
             else:
                 delimiter = None
             text_ = text.strip()
+
+            weekday = None
+            if not text_[0].isdigit():
+                for i, c in enumerate(text_):
+                    if c.isdigit():
+                        break
+                weekday, text_ = text_[:i], text_[i:]
+                weekday = weekday.lower().strip()
+                weekday = weekday.replace(',', '')
+                weekday = weekday.replace('.', '')
+                if len(weekday) <= 3:
+                    weekday = TextNormalization.normalize_weekday(weekday)
 
             if delimiter:
                 month, day, year = text_.split(delimiter)
@@ -1129,16 +1365,19 @@ class TextNormalization(object):
                         text_ = '{0} {1} {2}'.format(normalized_month, normalized_day, normalized_year)
                     else:
                         text_ = 'the {0} of {1} {2}'.format(normalized_day, normalized_month, normalized_year)
+                    if weekday:
+                        text_ = weekday + ' ' + text_
                 else:
                     text_ = '{0}年{1}月{2}日'.format(normalized_year, normalized_month, normalized_day)
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_DDMMYYYY.match(text) or self.DATE_DMYYYY.match(text) or self.DATE_DDMMYY.match(text):
+            case = 'DATE_DDMMYYYY'
             print('Case DATE_DDMMYYYY', text)
             if '-' in text:
                 delimiter = '-'
@@ -1162,14 +1401,15 @@ class TextNormalization(object):
                     text_ = 'the {0} of {1} {2}'.format(normalized_day, normalized_month, normalized_year)
                 else:
                     text_ = '{0}年{1}月{2}日'.format(normalized_year, normalized_month, normalized_day)
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_MMDD.match(text):
+            case = 'DATE_MMDD'
             print('Case DATE_MMDD', text)
             if '-' in text:
                 delimiter = '-'
@@ -1183,14 +1423,15 @@ class TextNormalization(object):
                 normalized_month = TextNormalization.normalize_month(month)
                 normalized_day = TextNormalization.normalize_day(day)
                 text_ = '{0} {1}'.format(normalized_month, normalized_day)
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_EN_DMY.match(text):
+            case = 'DATE_EN_DMY'
             print('Case DATE_EN_DMY', text)
             text_ = text.strip()
             if text.strip().startswith('the '):
@@ -1200,12 +1441,21 @@ class TextNormalization(object):
             text_ = text_.replace('-', ' ')
             words = text_.split(' ')
 
-            weekday = None
+            weekday, calendar = None, None
             if len(words) == 3:
                 day, month, year = words
             else:
-                weekday, day, month, year = words
-                weekday = weekday.lower().replace(',', '')
+                if len(words) > 4:
+                    weekday, day, month, year, calendar = words
+                    weekday = weekday.lower().replace(',', '')
+                    calendar = ' '.join(list(calendar.lower()))
+                else:
+                    if words[-1].isdigit():
+                        weekday, day, month, year = words
+                        weekday = weekday.lower().replace(',', '')
+                    else:
+                        day, month, year, calendar = words
+                        calendar = ' '.join(list(calendar.lower()))
 
             try:
                 normalized_year = TextNormalization.normalize_year(year, previous=previous, following=following)
@@ -1219,15 +1469,18 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
+                if calendar:
+                    text_ += ' ' + calendar
 
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_EN_MDY.match(text):
+            case = 'DATE_EN_MDY'
             print('Case DATE_EN_MDY', text)
             text_ = text.strip()
             if text.strip().startswith('the '):
@@ -1237,12 +1490,21 @@ class TextNormalization(object):
             text_ = text_.replace('-', ' ')
             words = text_.split(' ')
 
-            weekday = None
+            weekday, calendar = None, None
             if len(words) == 3:
                 month, day, year = words
             else:
-                weekday, month, day, year = words
-                weekday = weekday.lower().replace(',', '')
+                if len(words) > 4:
+                    weekday, month, day, year, calendar = words
+                    weekday = weekday.lower().replace(',', '')
+                    calendar = ' '.join(list(calendar.lower()))
+                else:
+                    if words[-1].isdigit():
+                        weekday, month, day, year = words
+                        weekday = weekday.lower().replace(',', '')
+                    else:
+                        month, day, year, calendar = words
+                        calendar = ' '.join(list(calendar.lower()))
 
             try:
                 normalized_year = TextNormalization.normalize_year(year, previous=previous, following=following)
@@ -1256,15 +1518,18 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
+                if calendar:
+                    text_ += ' ' + calendar
 
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_EN_DM.match(text):
+            case = 'DATE_EN_DM'
             print('Case DATE_EN_DM', text)
             text_ = text.strip()
             text_ = text_.replace('.', '')
@@ -1289,14 +1554,15 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_EN_MD.match(text):
+            case = 'DATE_EN_MD'
             print('Case DATE_EN_MD', text)
             text_ = text.strip()
             text_ = text_.replace('.', '')
@@ -1321,14 +1587,15 @@ class TextNormalization(object):
                     if len(weekday) <= 3:
                         weekday = TextNormalization.normalize_weekday(weekday)
                     text_ = weekday + ' ' +  text_
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.DATE_EN_MY.match(text):
+            case = 'DATE_EN_MY'
             print('Case DATE_EN_MY', text)
             text_ = text.strip()
             text_ = text_.replace('.', '')
@@ -1341,34 +1608,40 @@ class TextNormalization(object):
                 else:
                     normalized_month = month.lower()
                 text_ = '{0} {1}'.format(normalized_month, normalized_year)
-                return text_
+                normalized_text = text_
             except KeyError as e:
                 print(e)
-                return text
+                normalized_text = text
             except Exception as e:
                 print(e)
                 raise
         elif self.TELEPHONE_COMMON.match(text):
+            case = 'TELEPHONE_COMMON'
             print('Case TELEPHONE_COMMON', text)
-            return TextNormalization.normalize_telephone_common(text)
+            normalized_text = TextNormalization.normalize_telephone_common(text)
         elif self.ISBN.match(text):
+            case = 'ISBN'
             print('Case ISBN', text)
-            return TextNormalization.normalize_telephone(text, language)
+            if text.isdigit():
+                normalized_text = TextNormalization.normalize_decimal(text)
+            else:
+                normalized_text = TextNormalization.normalize_telephone(text, language)
         elif self.LEADING_ZERO.match(text):
+            case = 'LEADING_ZERO'
             print('Case LEADING_ZERO', text)
-            text_ = TextNormalization.normalize_leading_zero(text)
-            return text_
+            normalized_text = TextNormalization.normalize_leading_zero(text)
         elif self.DECIMAL_COMMA_OPTIONAL.match(text):
+            case = 'DECIMAL_COMMA_OPTIONAL'
             print('Case DECIMAL_COMMA_OPTIONAL', text)
             if text.isdigit():
                 if int(text) <= 10000:
-                    text_ = TextNormalization.normalize_decimal(text)
+                    normalized_text = TextNormalization.normalize_decimal(text)
                 else:
-                    text_ = text
+                    normalized_text = text
             else:
-                text_ = TextNormalization.normalize_decimal(text)
-            return text_
+                normalized_text = TextNormalization.normalize_decimal(text)
         elif self.PERCENT.match(text):
+            case = 'PERCENT'
             print('Case PERCENT', text)
             if text.startswith('-'):
                 is_minus = True
@@ -1386,55 +1659,93 @@ class TextNormalization(object):
             text_ += ' percent'
             if is_minus:
                 text_ = 'minus ' + text_
-            return text_
-        elif self.TELEPHONE.match(text):
-            print('Case TELEPHONE', text)
-            return TextNormalization.normalize_telephone(text)
-        elif self.IPv4.match(text):
-            print('Case IPv4', text)
-            return TextNormalization.normalize_ipv4(text, language)
+            normalized_text = text_
         elif self.MEASURE.match(text):
+            case = 'MEASURE'
             print('Case MEASURE', text)
-            return TextNormalization.normalize_measure(text)
+            normalized_text = TextNormalization.normalize_measure(text)
         elif self.CLOCK.match(text):
+            case = 'CLOCK'
             print('Case CLOCK', text)
-            return TextNormalization.normalize_clock(text)
+            normalized_text = TextNormalization.normalize_clock(text)
+        elif self.SECONDS.match(text):
+            case = 'SECONDS'
+            print('Case SECONDS', text)
+            normalized_text = TextNormalization.normalize_seconds(text)
+        elif self.MILLISECONDS.match(text):
+            case = 'MILLISECONDS'
+            print('Case MILLISECONDS', text)
+            normalized_text = TextNormalization.normalize_milliseconds(text)
         elif self.FRACTION.match(text):
+            case = 'FRACTION'
             print('Case FRACTION', text)
-            return TextNormalization.normalize_fraction(text)
+            normalized_text = TextNormalization.normalize_fraction(text)
         elif self.CURRENCY.match(text):
+            case = 'CURRENCY'
             print('Case CURRENCY', text)
-            return TextNormalization.normalize_currency(text)
+            normalized_text = TextNormalization.normalize_currency(text)
         elif self.ALPHADIGIT.match(text):
+            case = 'ALPHADIGIT'
             print('Case ALPHADIGIT', text)
-            return TextNormalization.normalize_telephone(text)
-        # elif self.ROMAN.match(text):
-        #     print('Case ROMAN', text)
-        #     return TextNormalization.normalize_roman(text)
+            normalized_text = TextNormalization.normalize_alphadigit(text)
+        elif self.TELEPHONE.match(text):
+            case = 'TELEPHONE'
+            print('Case TELEPHONE', text)
+            normalized_text = TextNormalization.normalize_telephone(text)
+        elif self.IPv4.match(text):
+            case = 'IPV4'
+            print('Case IPv4', text)
+            normalized_text = TextNormalization.normalize_ipv4(text, language)
+
+        elif self.ROMAN.match(text):
+            case = 'ROMAN'
+            print('Case ROMAN', text)
+            normalized_text = TextNormalization.normalize_roman(text)
         elif self.URL.match(text):
+            case = 'URL'
             print('Case URL', text)
-            return TextNormalization.normalize_url(text)
+            normalized_text = TextNormalization.normalize_url(text)
         elif self.HASHTAG.match(text):
+            case = 'HASHTAG'
             print('Case HASHTAG', text)
-            return TextNormalization.normalize_hash_tag(text)
+            normalized_text = TextNormalization.normalize_hash_tag(text)
         elif self.HYPHEN.match(text):
+            case = 'HYPHEN'
             print('Case HYPHEN', text)
-            return TextNormalization.normalize_hyphen(text)
+            normalized_text = TextNormalization.normalize_hyphen(text)
         elif self.PROPER_CASE_CONCAT.match(text):
+            case = 'PROPER_CASE_CONCAT'
             print('Case PROPER_CASE_CONCAT', text)
-            return text
+            normalized_text = text
+        elif self.CAPITAL_DOT.match(text):
+            case = 'CAPITAL_DOT'
+            print('Case CAPITAL_DOT')
+            normalized_text = TextNormalization.normalize_capital_dot(text)
         elif self.CAPITAL_LETTER.match(text):
+            case = 'CAPITAL_LETTER'
             print('Case CAPITAL_LETTER')
-            return TextNormalization.normalize_capital_letter(text)
+            normalized_text = TextNormalization.normalize_capital_letter(text)
+        elif self.REPLACE.match(text):
+            case = 'REPLACE'
+            print('Case REPLACE')
+            d = {
+                '49ers': 'forty niners',
+                '76ers': 'seventy sixers'
+            }
+            normalized_text = d[text]
         # elif text.endswith('.') and len(text) > 1:
+        #     case = 'LETTER'
         #     print('Case LETTER', text)
         #     text_ = text.replace('.', '').strip().lower()
         #     text_ = text_.replace(' ', '')
         #     text_ = " ".join(text_)
-        #     return text_
+        #     normalized_text = text_
         else:
+            case = 'NO_CHANGE'
             print('Case NO_CHANGE', text)
-            return text
+            normalized_text = text
+
+        return normalized_text, case
 
 if __name__ == '__main__':
     test_cases = [
@@ -1512,7 +1823,9 @@ if __name__ == '__main__':
         ('9780521653947', None),
         ('05 250', None),
         ('o', None),
-        ('0', None),
+        ('0', 'zero'),
+        ('00', 'o o'),
+        ('000', 'o o o'),
         ('33130', None),
         ('91430', None),
         ('38115', None),
@@ -1546,19 +1859,22 @@ if __name__ == '__main__':
         ('1¼ mi', None),
         ('2, ', 'two'),
         ('18.7 g', 'eighteen point seven grams'),
-        ('C107 ', None),
-        ('C613', None),
         ('3.25 million', None),
         ('83 %', 'eighty three percent'),
-        ('78.03 %', None),
+        ('78.03 %', 'seventy eight point o three percent'),
         ('450 mV', None),
-        ('8 May,', None),
+        ('8 May,', 'the eighth of may'),
         ('80, ', 'eighty'),
         ('May 11th 2011', None),
         ('Friday, 7/17/2015', None),
+        ('20152012', 'twenty million one hundred fifty two thousand twelve'),
+        ("20140115","twenty million one hundred forty thousand one hundred fifteen"),
+        ("19171930","nineteen million one hundred seventy one thousand nine hundred thirty"),
+        # ("19840306","one nine eight four o three o six"),
         ('3 80 GB', None),
         ('/m', 'per meter'),
         ('8 million m²', 'eight million square meters'),
+        ("200 ms","two hundred milliseconds"),
         ('$745,244', None),
         ('100 metres', 'one hundred meters'),
         ('3700 BC', None),
@@ -1568,37 +1884,39 @@ if __name__ == '__main__':
         ('１', '１'),
         ('per km2', 'per square kilometer'),
         ('2: 45', 'two forty five'),
-        ('00', 'zero'),
-        ('51 BCE,', None),
-        ('415 B.C.', None),
+        ('51 BCE,', 'fifty one b c e'),
+        ('415 B.C.', 'four fifteen b c'),
         ('2 Feb 70', None),
         ('7-13 2014', None),
-        ('A330', None),
-        ('the 27 June 2007', None),
+        ('the 27 June 2007', 'the twenty seventh of june two thousand seven'),
         ('7 770', None),
         ('7 770ha', None),
         ('7770ha', None),
         ('NOK 1.2 billion', None),
         ('6:00', "six o'clock"),
         ('16:00', "sixteen hundred"),
-        ('22 feb 2016', None),
+        ('22 feb 2016', 'the twenty second of february twenty sixteen'),
         ('£295m', 'two hundred ninety five million pounds'),
-        ('KB', None),
-        ('9 December 2005,', None),
-        ('$303.8m', None),
-        ('$500M', None),
-        ('C64 ', None),
-        ('$120 000', None),
-        ('LB', None),
-        ('/ km²', None),
-        ('$44.00', None),
+        ('9 December 2005,', 'the ninth of december two thousand five'),
+        ('$303.8m', 'three hundred three point eight million dollars'),
+        ('$500M', 'five hundred million dollars'),
+        ('$120 000', 'one hundred twenty thousand dollars'),
+        ('$44.00', 'forty four dollars'),
+        ("$7.0 Million","seven million dollars"),
         ('35059-098', None),
-        ('US$5 million', None),
-        ('$300,000', None),
-        ('$300k', None),
+        ('US$5 million', 'five million dollars'),
+        ('$300,000', 'three hundred thousand dollars'),
+        ('$300k', 'three hundred thousand dollars'),
         ('$4billion', 'four billion dollars'),
         ('$12B', 'twelve billion dollars'),
+        ("Rs 10 lakh","ten lakh rupees"),
+        ("Rs 4,000 cr","four thousand crore rupees"),
+        ("Rs 1,000 crore","one thousand crore rupees"),
+        ('LB', None),
+        ('/ km²', 'per square kilometers'),
         ('XK', 'x k'),
+        ('C64 ', None),
+        ('KB', None),
         ('CRC2142', 'two thousand one hundred forty two costa rican colons'),
         ('CYP-450', 'minus four hundred fifty cypriot pounds'),
         ('MDL-72222', 'minus seventy two thousand two hundred twenty two moldovan leus'),
@@ -1626,34 +1944,158 @@ if __name__ == '__main__':
         ('10:24am EST', 'ten twenty four a m e s t'),
         ('8 pm AEST', 'eight p m a e s t'),
         ('3.32pm GMT', 'three thirty two p m g m t'),
-        ('4:38.36', None),
+        ('12:38 P.M. EST', 'twelve thirty eight p m e s t'),
+        ("2:34.19","two minutes thirty four seconds and nineteen milliseconds"),
+        ("17 november 2016", "the seventeenth of november twenty sixteen"),
         ('Thursday, 17-Nov-2016', None),
-        ('14TH OCTOBER 2013', None),
-        ('Fri, 07/22/2011', None),
-        ('23-Mar-1998', None),
-        ('10-April-2014', None),
+        ('14TH OCTOBER 2013', "the fourteenth of october twenty thirteen"),
+        ('Fri, 07/22/2011', "friday july twenty second twenty eleven"),
+        ("Friday March 7, 1980","friday march seventh nineteen eighty"),
+        ('23-Mar-1998', "the twenty third of march nineteen ninety eight"),
+        ('10-April-2014', "the tenth of april twenty fourteen"),
         ('6/03/2014', None),
-        ('Sun. 2017-03-16', None),
+        ('Sun. 2017-03-16', "sunday the sixteenth of march twenty seventeen"),
         ('12-NOV-1874', 'the twelfth of november eighteen seventy four'),
+        ("1743.06.23","the twenty third of june seventeen forty three"),
+        ("01.10.2008","the tenth of january two thousand eight"),
+        ("20:00:00 EDT","twenty hours zero minutes and zero seconds e d t"),
+        ("26.9.2000","the twenty sixth of september two thousand"),
+        ("2:28.12","two minutes twenty eight seconds and twelve milliseconds"),
         ('¥3 Billion', 'three billion yen'),
+        # ("£77,039.89", "seventy seven thousand thirty nine pounds and eighty nine pence"),
+        # ("$88434.05","eighty eight thousand four hundred thirty four dollars and five cents"),
         ('144kb', 'one hundred forty four kilobits'),
-        ('76ers', None),
-        ('49ers', None),
+        ('76ers', 'seventy sixers'),
+        ('49ers', 'forty niners'),
         ('2min', None),
         ('19617 12-JUL-1999 MINISTERIO DE JUSTICIA', None),
         ('(1904) 1 CLR 497', None),
         ('(1992) 2 SCC 105', None),
-        ('cv-', None),
-        ('pyran-', None),
-        ('#EndMommyWars', 'hash tag endmommywars'),  # hash tag
-        ('18:30:00 GMT', 'eighteen hours thirty minutes and zero seconds g m t'),
+        ('cv-', 'c v'),
+        ('pyran-', 'p y r a n'),
+        ('#EndMommyWars', 'hash tag endmommywars'),
+        ('2013in', 'two thousand thirteen inches'),
+        ('485 U.S. ', 'four hundred eighty five'),
+        ('U.S.', 'u s'),
+        ("$612 MILLION", "six hundred twelve million dollars"),
+        ("200 C.E.","two hundred c e"),
+        ("0.008 AU","zero point o o eight astronomical units"),
+        (".5AU","point five astronomical units"),
+        ("1795 / 1805","one thousand seven hundred ninety five one thousand eight hundred fifths"),
+        ("1507/8","one thousand five hundred seven eighths"),
+        ("3/2009","three two thousand ninths"),
+        ("66/100","sixty six one hundredths"),
+        ("2009/106982","two thousand nine one hundred six thousand nine hundred eighty seconds"),
+        ("8 1/2","eight and a half"),
+        ("1995/20","one thousand nine hundred ninety five twentieths"),
+        ("3520/3540","three thousand five hundred twenty three thousand five hundred fortieths"),
+        ("5/2001","five two thousand firsts"),
+        ("26/11","twenty six elevenths"),
+        ("0/110","zero one hundred tenths"),
+        ("1/1","one over one"),
+        ("6/4","six quarters"),
+        ("90/ 3","ninety thirds"),
+        ("-3202/11","minus three thousand two hundred two elevenths"),
+        ("-495/95", "minus four hundred ninety five ninety fifths"),
+        ("33 1/3", "thirty three and a third"),
+        # ("36,578/15","thirty six thousand five hundred seventy eight fifteenths"),
+        ("-5/5", None),
+        ("-1/2","minus one half"),
+        ("1/2","one half"),
+        ("16/2","sixteen halves"),
+        # ("172.22.0.0/15", "o n e s e v e n t w o dot t w e n t y t w o dot o dot o s l a s h f i f t e e n"),
+        ('49ers', 'forty niners'),
+        ('76ers', 'seventy sixers'),
+        ('XXXV', 'thirty five'),
+        ('xxxv', 'x x x v'),
+        ("22.9/sq mi", "twenty two point nine per square miles"),
+        ("8 10 1 212 XXXXXXX", None),
+        ("2015-2016 YOUNG COMPOSERS", None),
+        ("494-498 ISBN 0405077114", None),
+        ("124-100 RA-82005", None),
+        # ("50/60 Hz", 'fifty sixtieths hertz'),
+        ("26 August 1303 CE.","the twenty sixth of august thirteen o three c e"),
+        ("February 27, 1893 AD","february twenty seventh eighteen ninety three a d"),
+        ("(", "("),
+        (")", ")"),
+        ("-", "-"),
+        ("--", "--"),
+        ("---", "---"),
+        ("6435-", "six four three five"),
+        ("8-7-2","eight sil seven sil two"),
+        ("(2014) 38","two o one four sil three eight"),
+        ("(1993)9","one nine nine three sil nine"),
+        ("978-0-19-507678-3","nine seven eight sil o sil one nine sil five o seven six seven eight sil three"),
+        ("14 8 1 5 38-30 17 5","one four sil eight sil one sil five sil three eight sil three o sil one seven sil five"),
+        ("11-5 MAC","one one sil five sil mac"),
+        ("0-333-73432-7 ISBN 1-56159-228-5","o sil three three three sil seven three four three two sil seven sil i s b n sil one sil five six one five nine sil two two eight sil five"),
+        ("000 UNITS PER YEAR IN 2013","o o o sil units sil per sil year sil in sil two o one three"),
+        ("350-340 BC","three five o sil three four o sil b c"),
+        ("600-1000 AD","six hundred sil one thousand sil ad"),
+        ("2007-216676 ECRYPT II","two o o seven sil two one six six seven six sil ecrypt sil ii"),
+        ("183-188 ISBN 3-932965-86-8","one eight three sil one eight eight sil i s b n sil three sil nine three two nine six five sil eight six sil eight"),
+        ("0812979699 OCLC 234316192","o eight one two nine seven nine six nine nine sil o c l c sil two three four three one six one nine two"),
+        ("51 -- 1995 ADOPTION ACT","five one sil one nine nine five sil adoption sil act"),
+        ("1-800-RUNAWAY","one sil eight hundred sil runaway"),
+        ("138-EE","one three eight sil ee"),
+        ("5-5-5","five sil five sil five"),
+        ("(2007) 79-92","two o o seven sil seven nine sil nine two"),
+        ("978-964-5983-33-6","nine seven eight sil nine six four sil five nine eight three sil three three sil six"),
+        ("20(1) 65-72","two o sil one sil six five sil seven two"),
+        ("978- 0-906294-72-7","nine seven eight sil o sil nine o six two nine four sil seven two sil seven"),
+        ("0891-1851","o eight nine one sil one eight five one"),
+        ("2223-2261","two two two three sil two two six one"),
+        ("(24)27","two four sil two seven"),
+        ("0719040019","o seven one nine o four o o one nine"),
+        ("91-63 TO MOVE ON TO TORONTO 2015 FINAL","nine one sil six three sil to sil move sil on sil to sil toronto sil two o one five sil final"),
+        # ("720-WGN","seven two o sil w g n"),
+        # ("1205-1209x1211","one two o five sil one two o nine extension one two one one"),
+        # ("0-8176-3647-1 MR 13218861994","o sil eight one seven six sil three six four seven sil one sil mister sil one three two one eight eight six one nine nine four"),
+        ("17193107","seventeen million one hundred ninety three thousand one hundred seven"),
+        ("9780824820664","nine trillion seven hundred eighty billion eight hundred twenty four million eight hundred twenty thousand six hundred sixty four"),
+        ("06080291-","o six o eight o two nine one"),
+        ("001005353","o o one o o five three five three"),
+        ("B14","b fourteen"),
+        ("M261","m two six one"),
+        ("M31","m thirty one"),
+        ("A1689","a one six eight nine"),
+        ("I-49","i forty nine"),
+        ("CR 16","c r sixteen"),
+        ("US 3607316","u s three million six hundred seven thousand three hundred sixteen"),
+        ("US2008013385","u s two billion eight million thirteen thousand three hundred eighty five"),
+        ("U.S. 1828","u s eighteen twenty eight"),
+        ("Interstate 86","interstate eighty six"),
+        ("C01","c o one"),
+        ("A330","a three thirty"),
+        ("B03003","b o three o o three"),
+        ("C00150367","c o o one five o three six seven"),
+        ("C3047 ","c three o four seven"),
+        ("M0 ","m o"),
+        ("M020","m twenty"),
+        ('C107 ', None),
+        ('C613', None),
+        ("I-5","i five"),
+        ("A310","a three ten"),
+        ("10:35:47","ten hours thirty five minutes and forty seven seconds"),
         ('15:37.39', 'fifteen minutes thirty seven seconds and thirty nine milliseconds'),
+        ('18:30:00 GMT', 'eighteen hours thirty minutes and zero seconds g m t'),
+        ("8:00pm","eight p m"),
+        ("1:10","one ten"),
+        ("20:00","twenty hundred"),
+        ("10:00","ten o'clock"),
+        ("4:07","four o seven"),
+        ("1:00pm","one p m"),
+        ("2 pm","two p m"),
+        # ("00:01","zero o one"),
+        ("0.8.7.0","o dot e i g h t dot s e v e n dot o"),
+        ("16.14.12.10","s i x t e e n dot f o u r t e e n dot t w e l v e dot t e n"),
+        ("10.47.16.5", None)
     ]
 
     text_normalization = TextNormalization()
 
     for test_case in test_cases:
-        normalized_text = text_normalization.normalize2(test_case[0])
+        normalized_text, case = text_normalization.normalize2(test_case[0])
         print(normalized_text)
         if test_case[1]:
             assert normalized_text == test_case[1]
