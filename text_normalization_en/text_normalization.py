@@ -121,6 +121,7 @@ class TextNormalization(object):
     CAPITAL_DOT = re.compile(r"^([A-Z]\. ?)+$")
     REPLACE = re.compile(r"^(49ers|76ers)$")
     URL = re.compile(r"(.*(\.[0-9]\-|\.co|\.doi|\.ini|\.org|\.edu|\.gov|\.net|\.nrg|\.rez|\.but|\.cit|\.exe|\.xls|\.pdf|\.jpg|\.info|\.guns|\.mouse|\.view|\.asus|\.tv|\.mil|\.pl|\.ie|\.ir|\.fm|\.hu|\.hr|\.fr|\.ee|\.uk|\.de|\.ru|\.us|\.es|\.ca|\.ch|\.cx|\.mx|\.be|\.nz|\.va|\.fi|\.ar|\.au|\.at|\.cn|\.kr|\.nl|\.bg|\.it|\.ro|\.cz|\.do|\.eu|\.is|\.no|\.ph|\.gr|\.se|\.jp|\.xyz|www\.|\.htm|http\:|https\:).*|^\.[0-9]\.[0-9]*)")
+    SPECIAL = re.compile(r"^(:|~|\-|I|II|III|X|V|IV|VI|VII|VIII|CD|XI|XII|[Nn]o|x|st|dr|sr|vs|mrs?|[Ss]un|OF|id|[Uu]s|SA|AM|am|min) ?$")
 
     digit_transcripter = inflect.engine()
     capitals_path = '/home/ben/github/natural_language_processing/text_normalization_en/capitals'
@@ -1112,8 +1113,6 @@ class TextNormalization(object):
 
     @staticmethod
     def normalize_roman(text):
-        # if text == 'I':
-        #     return 'the first'
         d = {
             'II': ['the second', 'second', 'two'],
             'III': ['the third', 'third', 'three'],
@@ -1134,9 +1133,9 @@ class TextNormalization(object):
             'ix': ['the ninth', 'ninth', 'nine'],
             'x': ['the tenth', 'tenth', 'ten']
         }
-        if text in d:
-            return d[text][0]
-        elif len(text) <= 1:
+        # if text in d:
+            # return d[text][2]
+        if len(text) <= 1:
             return text
         elif len(text) == 2:
             if text in ['IV', 'VI']:
@@ -1213,6 +1212,118 @@ class TextNormalization(object):
         text = ' '.join(list(text))
         return text
 
+    @staticmethod
+    def is_date(text):
+        if text.isdecimal():
+            return 1000 <= int(text) <= 2099
+        else:
+            return False
+
+    @staticmethod
+    def is_cardinal(text):
+        if text.isdecimal():
+            return not(1000 <= int(text) <= 2099)
+        else:
+            try:
+                num = float(text)
+                return True
+            except ValueError:
+                return False
+
+    @staticmethod
+    def is_measure(text):
+        if TextNormalization.MEASURE.match(text):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_numerical(text):
+        return TextNormalization.is_date(text) or TextNormalization.is_cardinal(text) or TextNormalization.is_measure(text)
+
+    @staticmethod
+    def normalize_special(text, previous=None, following=None):
+        text = text.strip()
+        if previous and following:
+            if text in [':']:
+                if TextNormalization.is_cardinal(previous) and TextNormalization.is_cardinal(following):
+                    return 'to'
+                else:
+                    return text
+            elif text in ['-']:
+                if TextNormalization.is_cardinal(previous) and TextNormalization.is_date(following):
+                    return text
+                elif TextNormalization.is_numerical(previous) and TextNormalization.is_numerical(following):
+                    return 'to'
+                else:
+                    return text
+            elif text in ['no', 'No']:
+                if TextNormalization.is_cardinal(following):
+                    return 'number'
+                else:
+                    return text
+            elif text in ['x']:
+                if TextNormalization.is_cardinal(previous) and TextNormalization.is_cardinal(following):
+                    return 'by'
+                elif TextNormalization.is_cardinal(previous) and TextNormalization.is_measure(following):
+                    return 'by'
+                else:
+                    return text
+            elif text in ['~']:
+                if TextNormalization.is_cardinal(previous) and TextNormalization.is_cardinal(following):
+                    return 'to'
+                elif TextNormalization.is_cardinal(previous) and TextNormalization.is_measure(following):
+                    return 'to'
+                else:
+                    return 'tilde'
+            elif text in ['op']:
+                if TextNormalization.is_cardinal(following):
+                    return 'opus'
+                else:
+                    return text
+            elif text in ['Sun']:
+                if TextNormalization.is_date(previous) or TextNormalization.is_date(following):
+                    return 'sunday'
+                else:
+                    return text
+            elif text in ['min']:
+                if TextNormalization.is_cardinal(previous):
+                    return 'minute'
+                else:
+                    return text
+            elif text in ['I', 'X', 'V', 'OF', 'id', 'sun', 'us', 'SA', 'mrs', 'am', 'AM', 'Us', 'XI']:
+                return text
+            elif text in ['st']:
+                return 'saint'
+            elif text in ['II']:
+                return 'two'
+            elif text in ['III']:
+                return 'three'
+            elif text in ['dr']:
+                return 'doctor'
+            elif text in ['sr']:
+                return 'senior'
+            elif text in ['CD']:
+                return 'c d'
+            elif text in ['vs']:
+                return 'versus'
+            elif text in ['mr']:
+                return 'mister'
+            elif text in ['IV']:
+                return 'the fourth'
+            elif text in ['VI']:
+                return 'the sixth'
+            elif text in ['VII']:
+                return 'the seventh'
+            elif text in ['VIII']:
+                return 'the eighth'
+            elif text in ['XII']:
+                return 'the twelfth'
+            else:
+                return text
+        else:
+            return text
+
     def normalize_all(self):
         print('start normalization')
         self.df_test['after'] = self.df_test['before'].apply(lambda x: self.normalize2(x, previous=x.shift(1), following=x.shift(-1)))
@@ -1261,36 +1372,40 @@ class TextNormalization(object):
         if isinstance(text, float) and pd.isnull(text):
             case = 'NULL'
             normalized_text = ""
-        elif text in ['-'] and (previous and following):
-            case = 'TO_1'
-            if (previous.isdigit() and following.isdigit()):
-                normalized_text = 'to'
-            else:
-                normalized_text = text
-        elif text in ['~', ':'] and previous and following:
-            case = 'TO_2'
-            if (previous.isdigit() and following.isdigit()):
-                normalized_text = 'to'
-            else:
-                normalized_text = text
-        elif text in ['x', 'x '] and previous and following:
-            case = 'BY'
-            if (TextNormalization.has_digit(previous) and TextNormalization.has_digit(following)):
-                normalized_text = 'by'
-            else:
-                normalized_text = text
-        elif text == 'min' and previous:
-            case = 'MIN'
-            if previous.isdigit():
-                normalized_text = 'minute'
-            else:
-                normalized_text = text
-        elif text in ['no', 'No', 'NO'] and following:
-            case = 'NUM'
-            if following.isdigit():
-                normalized_text = 'number'
-            else:
-                normalized_text = text
+        elif self.SPECIAL.match(text):
+            case = 'SPECIAL'
+            print('Case SEPCIAL', text)
+            normalized_text = TextNormalization.normalize_special(text, previous=previous, following=following)
+        # elif text in ['-'] and (previous and following):
+        #     case = 'TO_1'
+        #     if (previous.isdigit() and following.isdigit()):
+        #         normalized_text = 'to'
+        #     else:
+        #         normalized_text = text
+        # elif text in ['~', ':'] and previous and following:
+        #     case = 'TO_2'
+        #     if (previous.isdigit() and following.isdigit()):
+        #         normalized_text = 'to'
+        #     else:
+        #         normalized_text = text
+        # elif text in ['x', 'x '] and previous and following:
+        #     case = 'BY'
+        #     if (TextNormalization.has_digit(previous) and TextNormalization.has_digit(following)):
+        #         normalized_text = 'by'
+        #     else:
+        #         normalized_text = text
+        # elif text == 'min' and previous:
+        #     case = 'MIN'
+        #     if previous.isdigit():
+        #         normalized_text = 'minute'
+        #     else:
+        #         normalized_text = text
+        # elif text in ['no', 'No', 'NO'] and following:
+        #     case = 'NUM'
+        #     if following.isdigit():
+        #         normalized_text = 'number'
+        #     else:
+        #         normalized_text = text
         elif text in ['#'] and following:
             case = 'HASH'
             if not following.isdigit():
@@ -1731,11 +1846,10 @@ class TextNormalization(object):
             case = 'IPV4'
             print('Case IPv4', text)
             normalized_text = TextNormalization.normalize_ipv4(text, language)
-
-        elif self.ROMAN.match(text):
-            case = 'ROMAN'
-            print('Case ROMAN', text)
-            normalized_text = TextNormalization.normalize_roman(text)
+        # elif self.ROMAN.match(text):
+        #     case = 'ROMAN'
+        #     print('Case ROMAN', text)
+        #     normalized_text = TextNormalization.normalize_roman(text)
         elif self.URL.match(text):
             case = 'URL'
             print('Case URL', text)
