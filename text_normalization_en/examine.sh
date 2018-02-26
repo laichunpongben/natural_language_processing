@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-types=(CARDINAL DATE MEASURE PLAIN)
+types=(CARDINAL DATE DIGIT MEASURE PLAIN)
 keys=(\: \- no I st II dr No X V III CD vs mr Sun OF id sun IV x sr us SA mrs am AM VI Us op XI VIII VII XII \~ min)
 
 declare -A patterns
