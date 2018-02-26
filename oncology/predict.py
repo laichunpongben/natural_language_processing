@@ -8,9 +8,9 @@ df_x_test = pd.read_csv(test_csv_path)
 N = df_x_test.shape[0]
 print(df_x_test)
 
-w2v = word2vec.Word2Vec.load('w2v200.h5')
+w2v = word2vec.Word2Vec.load('w2v300.h5')
 
-dimension = 200
+dimension = 300
 x_test = np.zeros((N, dimension))
 for index, row in df_x_test.iterrows():
     gene, variation = row['Gene'], row['Variation']

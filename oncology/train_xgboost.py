@@ -2,17 +2,19 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import TruncatedSVD, PCA
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
 import pandas as pd
 import numpy as np
 import xgboost as xgb
 
-train = pd.read_csv('input/training_variants')
-test = pd.read_csv('input/test_variants')
-trainx = pd.read_csv('input/training_text', sep="\|\|", engine='python', header=None, skiprows=1, names=["ID","Text"])
-testx = pd.read_csv('input/test_text', sep="\|\|", engine='python', header=None, skiprows=1, names=["ID","Text"])
+npz_path = 'stage2_pipeline1.npz'
+
+train = pd.read_csv('input/stage1_variants_lower.csv')
+test = pd.read_csv('input/stage2_test_variants_lower.csv')
+trainx = pd.read_csv('input/stage1_text_gene', sep="\|\|", engine='python', header=None, skiprows=1, names=["ID","Text"])
+testx = pd.read_csv('input/stage2_text_gene', sep="\|\|", engine='python', header=None, skiprows=1, names=["ID","Text"])
 
 train = pd.merge(train, trainx, how='left', on='ID').fillna('')
 y = train['Class'].values
@@ -21,11 +23,16 @@ train = train.drop(['Class'], axis=1)
 test = pd.merge(test, testx, how='left', on='ID').fillna('')
 pid = test['ID'].values
 
+print(train)
+print(test)
+print(trainx)
+print(testx)
+
 df_all = pd.concat((train, test), axis=0, ignore_index=True)
 df_all['Gene_Share'] = df_all.apply(lambda r: sum([1 for w in r['Gene'].split(' ') if w in r['Text'].split(' ')]), axis=1)
 df_all['Variation_Share'] = df_all.apply(lambda r: sum([1 for w in r['Variation'].split(' ') if w in r['Text'].split(' ')]), axis=1)
 
-for i in range(56):
+for i in range(56):  # why 56?
    df_all['Gene_'+str(i)] = df_all['Gene'].map(lambda x: str(x[i]) if len(x)>i else '')
    df_all['Variation'+str(i)] = df_all['Variation'].map(lambda x: str(x[i]) if len(x)>i else '')
 
@@ -33,6 +40,8 @@ gen_var_lst = sorted(list(train.Gene.unique()) + list(train.Variation.unique()))
 print(len(gen_var_lst))
 gen_var_lst = [x for x in gen_var_lst if len(x.split(' '))==1]
 print(len(gen_var_lst))
+print(gen_var_lst)
+
 i_ = 0
 
 for gen_var_lst_itm in gen_var_lst:
@@ -56,6 +65,8 @@ for c in df_all.columns:
 
 train = df_all.iloc[:len(train)]
 test = df_all.iloc[len(train):]
+print(train.shape)
+print(test.shape)
 
 class cust_regression_vals(BaseEstimator, TransformerMixin):
     def fit(self, x, y=None):
@@ -101,10 +112,16 @@ print(train.shape)
 test = fp.transform(test)
 print(test.shape)
 
-np.savez_compressed('pipeline.npz', train=train, test=test)
+np.savez_compressed(npz_path, train=train, test=test)
 
-# z = np.load('pipeline.npz')
-# train, test = z['train'], z['test']
+z = np.load(npz_path)
+train, test = z['train'], z['test']
+
+# pca = PCA(n_components=50, svd_solver='randomized', whiten=True)
+# train = pca.fit_transform(train)
+# test = pca.fit_transform(test)
+# print(train.shape)
+# print(test.shape)
 
 y = y - 1 #fix for zero bound array
 
@@ -135,9 +152,9 @@ for i in range(fold):
     submission = pd.DataFrame(pred, columns=['class'+str(c+1) for c in range(9)])
     submission['ID'] = pid
     submission = submission.reindex(columns=['ID']+submission.columns.tolist()[:-1])
-    submission.to_csv('submission_xgb_fold_'  + str(i) + '.csv', index=False)
+    submission.to_csv('output/submission_xgb_fold_'  + str(i) + '.csv', index=False)
 preds /= denom
 submission = pd.DataFrame(preds, columns=['class'+str(c+1) for c in range(9)])
 submission['ID'] = pid
 submission = submission.reindex(columns=['ID']+submission.columns.tolist()[:-1])
-submission.to_csv('submission_xgb.csv', index=False)
+submission.to_csv('output/submission_xgb.csv', index=False)
