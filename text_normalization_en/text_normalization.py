@@ -6,6 +6,9 @@ from collections import OrderedDict
 import pandas as pd
 import inflect
 import roman
+import random
+
+GAMBLE = False
 
 # Unhandled
 # MMDDYYYY or DDMMYYYY
@@ -1419,12 +1422,42 @@ class TextNormalization(object):
         elif self.YEAR.match(text) and 1001 <= int(text.strip()) <= 2099:
             case = 'YEAR'
             print('Case YEAR', text)
-            if text.isdigit():
-                normalized_text = TextNormalization.normalize_year(text, previous=previous, following=following)
-            elif text.endswith(' '):  # TODO: handle xxxties
-                normalized_text = TextNormalization.normalize_year(text[:-1], previous=previous, following=following)
+            text = text.strip()
+            if text.isdecimal():
+                p = random.uniform(0, 1)
+                if p <= 0.25:
+                    # if TextNormalization.is_measure(previous) or TextNormalization.is_cardinal(following):
+                    # if False:
+                    normalized_text = TextNormalization.normalize_decimal(text)
+                else:
+                    normalized_text = TextNormalization.normalize_year(text)
             else:
                 normalized_text = text
+        elif self.TELEPHONE_COMMON.match(text):
+            case = 'TELEPHONE_COMMON'
+            print('Case TELEPHONE_COMMON', text)
+            normalized_text = TextNormalization.normalize_telephone_common(text)
+        elif self.ISBN.match(text):
+            case = 'ISBN'
+            print('Case ISBN', text)
+            if text.isdigit():
+                normalized_text = TextNormalization.normalize_decimal(text)
+            else:
+                normalized_text = TextNormalization.normalize_telephone(text, language)
+        elif self.LEADING_ZERO.match(text):
+            case = 'LEADING_ZERO'
+            print('Case LEADING_ZERO', text)
+            normalized_text = TextNormalization.normalize_leading_zero(text)
+        elif self.DECIMAL_COMMA_OPTIONAL.match(text):
+            case = 'DECIMAL_COMMA_OPTIONAL'
+            print('Case DECIMAL_COMMA_OPTIONAL', text)
+            if text.isdigit():
+                if int(text) <= 10000:
+                    normalized_text = TextNormalization.normalize_decimal(text)
+                else:
+                    normalized_text = text
+            else:
+                normalized_text = TextNormalization.normalize_decimal(text)
         elif self.DATE_YYYYMMDD.match(text) or self.DATE_YYYYMD.match(text):
             case = 'DATE_YYYYMMDD'
             print('Case DATE_YYYYMMDD', text)
@@ -1765,31 +1798,7 @@ class TextNormalization(object):
             except Exception as e:
                 print(e)
                 raise
-        elif self.TELEPHONE_COMMON.match(text):
-            case = 'TELEPHONE_COMMON'
-            print('Case TELEPHONE_COMMON', text)
-            normalized_text = TextNormalization.normalize_telephone_common(text)
-        elif self.ISBN.match(text):
-            case = 'ISBN'
-            print('Case ISBN', text)
-            if text.isdigit():
-                normalized_text = TextNormalization.normalize_decimal(text)
-            else:
-                normalized_text = TextNormalization.normalize_telephone(text, language)
-        elif self.LEADING_ZERO.match(text):
-            case = 'LEADING_ZERO'
-            print('Case LEADING_ZERO', text)
-            normalized_text = TextNormalization.normalize_leading_zero(text)
-        elif self.DECIMAL_COMMA_OPTIONAL.match(text):
-            case = 'DECIMAL_COMMA_OPTIONAL'
-            print('Case DECIMAL_COMMA_OPTIONAL', text)
-            if text.isdigit():
-                if int(text) <= 10000:
-                    normalized_text = TextNormalization.normalize_decimal(text)
-                else:
-                    normalized_text = text
-            else:
-                normalized_text = TextNormalization.normalize_decimal(text)
+
         elif self.PERCENT.match(text):
             case = 'PERCENT'
             print('Case PERCENT', text)
@@ -1838,22 +1847,22 @@ class TextNormalization(object):
             case = 'ALPHADIGIT'
             print('Case ALPHADIGIT', text)
             normalized_text = TextNormalization.normalize_alphadigit(text)
-        elif self.TELEPHONE.match(text):
-            case = 'TELEPHONE'
-            print('Case TELEPHONE', text)
-            normalized_text = TextNormalization.normalize_telephone(text)
         elif self.IPv4.match(text):
             case = 'IPV4'
             print('Case IPv4', text)
             normalized_text = TextNormalization.normalize_ipv4(text, language)
-        # elif self.ROMAN.match(text):
-        #     case = 'ROMAN'
-        #     print('Case ROMAN', text)
-        #     normalized_text = TextNormalization.normalize_roman(text)
         elif self.URL.match(text):
             case = 'URL'
             print('Case URL', text)
             normalized_text = TextNormalization.normalize_url(text)
+        elif self.TELEPHONE.match(text):
+            case = 'TELEPHONE'
+            print('Case TELEPHONE', text)
+            normalized_text = TextNormalization.normalize_telephone(text)
+        elif self.ROMAN.match(text):
+            case = 'ROMAN'
+            print('Case ROMAN', text)
+            normalized_text = TextNormalization.normalize_roman(text)
         elif self.HASHTAG.match(text):
             case = 'HASHTAG'
             print('Case HASHTAG', text)
@@ -1898,6 +1907,12 @@ class TextNormalization(object):
 
 if __name__ == '__main__':
     test_cases = [
+        ('1999', 'nineteen ninety nine'),
+        # ("445.0 km", "four hundred forty five point zero kilometers"),
+        ('20010101', 'twenty million ten thousand one hundred one'),
+        ('20112002', 'twenty million one hundred twelve thousand two'),
+        ("0952560151","o nine five two five six o one five one"),
+        ("0802844987","o eight o two eight four four nine eight seven"),
         ('OutRun', None),
         ('0-306-80821-8', None),
         ('2012-08-16', None),
